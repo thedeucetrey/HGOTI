@@ -93,88 +93,96 @@
 
     <footer class="mt-10 text-xs text-zinc-500 leading-relaxed">
       <p><strong>Policy:</strong> This site lists <em>adult (18+), consenting women creators</em> (streamers, influencers, content creators). Submissions must confirm age and consent. Respectful conduct only.</p>
-      <p>Demo stores data locally. For production, use the Next.js + Supabase setup below.</p>
+      <p>Demo stores data locally. For production, use the Next.js + Supabase setup.</p>
     </footer>
   </main>
 
   <!-- Profile Modal -->
-  <div id="profileModal" class="fixed inset-0 hidden items-end sm:items-center justify-center z-50">
+  <div id="profileModal" class="fixed inset-0 hidden z-50" role="dialog" aria-modal="true">
     <div class="absolute inset-0 bg-black/50"></div>
-    <!-- Stop clicks from bubbling to overlay -->
-    <div id="profilePanel" class="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden">
+    <!-- Panel is a flex column: header, scrollable body, persistent footer -->
+    <div id="profilePanel" class="relative mx-auto w-full sm:max-w-lg max-h-[90vh] mt-8 sm:mt-12 bg-white rounded-2xl overflow-hidden flex flex-col">
+      <!-- Header -->
       <div class="flex items-center justify-between p-4 border-b border-zinc-200">
         <h3 id="profileName" class="text-lg font-bold"></h3>
         <div class="flex items-center gap-2">
           <button id="editBtn" type="button" class="btn hidden px-2 py-1 rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
-          <button id="saveBtn" type="button" class="btn hidden px-2 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Save</button>
-          <button id="cancelBtn" type="button" class="btn hidden px-2 py-1 rounded-lg border border-zinc-300">Cancel</button>
           <button id="deleteBtn" type="button" class="btn hidden px-2 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Delete</button>
           <button id="closeModal" type="button" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
         </div>
       </div>
 
-      <!-- View Mode -->
-      <div id="profileView" class="grid grid-cols-2 gap-0">
-        <div class="col-span-2 sm:col-span-1">
-          <img id="profileImg" alt="" class="w-full h-full object-cover" />
+      <!-- Scrollable body -->
+      <div id="modalBody" class="flex-1 overflow-y-auto">
+        <!-- View Mode -->
+        <div id="profileView" class="grid grid-cols-2 gap-0">
+          <div class="col-span-2 sm:col-span-1">
+            <img id="profileImg" alt="" class="w-full h-full object-cover" />
+          </div>
+          <div class="col-span-2 sm:col-span-1 p-4 space-y-3">
+            <p id="profileBio" class="text-sm text-zinc-700"></p>
+            <div class="text-xs text-zinc-500"><span class="font-medium">Tags:</span> <span id="profileTags"></span></div>
+            <div class="text-xs text-zinc-500"><span class="font-medium">Stats:</span> <span id="profileStats"></span></div>
+            <div id="profileLinks" class="flex flex-wrap gap-2 pt-1"></div>
+          </div>
         </div>
-        <div class="col-span-2 sm:col-span-1 p-4 space-y-3">
-          <p id="profileBio" class="text-sm text-zinc-700"></p>
-          <div class="text-xs text-zinc-500"><span class="font-medium">Tags:</span> <span id="profileTags"></span></div>
-          <div class="text-xs text-zinc-500"><span class="font-medium">Stats:</span> <span id="profileStats"></span></div>
-          <div id="profileLinks" class="flex flex-wrap gap-2 pt-1"></div>
-        </div>
+
+        <!-- Edit Mode -->
+        <form id="profileEdit" class="hidden p-4 grid gap-3" autocomplete="off">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-2">
+              <label class="text-xs text-zinc-600">Display name</label>
+              <input name="name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs text-zinc-600">Image URL (portrait works best)</label>
+              <input name="image" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs text-zinc-600">Tags (comma-separated)</label>
+            <input name="tags" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs text-zinc-600">Bio</label>
+            <textarea name="bio" rows="3" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-2">
+              <label class="text-xs text-zinc-600">X (Twitter) URL</label>
+              <input name="x" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs text-zinc-600">OnlyFans URL</label>
+              <input name="onlyfans" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs text-zinc-600">Live preview</label>
+            <img id="editPreview" class="w-full aspect-[4/5] object-cover rounded-xl border border-zinc-200" alt="Preview" />
+          </div>
+        </form>
       </div>
 
-      <!-- Edit Mode -->
-      <form id="profileEdit" class="hidden p-4 grid gap-3" autocomplete="off">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="space-y-2">
-            <label class="text-xs text-zinc-600">Display name</label>
-            <input name="name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs text-zinc-600">Image URL (portrait works best)</label>
-            <input name="image" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
-          </div>
-        </div>
-        <div class="space-y-2">
-          <label class="text-xs text-zinc-600">Tags (comma-separated)</label>
-          <input name="tags" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
-        </div>
-        <div class="space-y-2">
-          <label class="text-xs text-zinc-600">Bio</label>
-          <textarea name="bio" rows="3" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off"></textarea>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="space-y-2">
-            <label class="text-xs text-zinc-600">X (Twitter) URL</label>
-            <input name="x" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs text-zinc-600">OnlyFans URL</label>
-            <input name="onlyfans" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
-          </div>
-        </div>
-        <div class="space-y-2">
-          <label class="text-xs text-zinc-600">Live preview</label>
-          <img id="editPreview" class="w-full aspect-[4/5] object-cover rounded-xl border border-zinc-200" alt="Preview" />
-        </div>
-      </form>
+      <!-- Persistent footer (only in edit mode) -->
+      <div id="editFooter" class="hidden border-t bg-white p-3 flex items-center justify-end gap-2">
+        <button id="cancelBtn" type="button" class="btn px-3 py-2 rounded-lg border border-zinc-300">Cancel</button>
+        <button id="saveBtn" type="button" class="btn px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Save</button>
+      </div>
     </div>
   </div>
 
   <!-- Add Creator (Admin) -->
-  <div id="addModal" class="fixed inset-0 hidden items-center justify-center z-50">
+  <div id="addModal" class="fixed inset-0 hidden z-50">
     <div class="absolute inset-0 bg-black/50"></div>
-    <form id="addForm" class="relative bg-white w-full sm:max-w-lg rounded-2xl overflow-hidden" autocomplete="off">
+    <form id="addForm" class="relative bg-white w-full sm:max-w-lg mx-auto mt-8 sm:mt-12 rounded-2xl overflow-hidden" autocomplete="off">
       <div class="flex items-center justify-between p-4 border-b border-zinc-200">
         <h3 class="text-lg font-bold">Add Woman Creator (18+)</h3>
         <button type="button" id="closeAdd" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
       </div>
       <div class="p-4 grid grid-cols-1 gap-3">
-        <input required name="name" placeholder="Display name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <input required name="image" placeholder="Portrait image URL (4:5 works best)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="name" required placeholder="Display name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="image" required placeholder="Portrait image URL (4:5 works best)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
         <input name="tags" placeholder="Tags (comma-separated, e.g. streamer, influencer)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
         <textarea name="bio" placeholder="Short bio (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2"></textarea>
         <input name="x" placeholder="X (Twitter) profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
@@ -188,9 +196,9 @@
   </div>
 
   <!-- Admin Unlock -->
-  <div id="unlockModal" class="fixed inset-0 hidden items-center justify-center z-50">
+  <div id="unlockModal" class="fixed inset-0 hidden z-50">
     <div class="absolute inset-0 bg-black/50"></div>
-    <form id="unlockForm" class="relative bg-white w-full sm:max-w-xs rounded-2xl overflow-hidden">
+    <form id="unlockForm" class="relative bg-white w-full sm:max-w-xs mx-auto mt-24 rounded-2xl overflow-hidden">
       <div class="p-4 border-b border-zinc-200">
         <h3 class="text-lg font-bold">Admin Password</h3>
       </div>
@@ -210,8 +218,8 @@
     const ADMIN_PASS = "changeme";
 
     // ===== Storage keys =====
-    const STORAGE_KEY = "hwoi_creators_v5"; // bumped version
-    const VOTE_LOG_KEY = "hwoi_vote_log_v5";
+    const STORAGE_KEY = "hwoi_creators_v6"; // bumped version
+    const VOTE_LOG_KEY = "hwoi_vote_log_v6";
     const ADMIN_FLAG = "hwoi_is_admin";
 
     // ===== Default women creators (placeholders) =====
@@ -318,12 +326,13 @@
       profileLinks: document.getElementById("profileLinks"),
       profileView: document.getElementById("profileView"),
       editBtn: document.getElementById("editBtn"),
-      saveBtn: document.getElementById("saveBtn"),
-      cancelBtn: document.getElementById("cancelBtn"),
       deleteBtn: document.getElementById("deleteBtn"),
       closeModal: document.getElementById("closeModal"),
       profileEdit: document.getElementById("profileEdit"),
       editPreview: document.getElementById("editPreview"),
+      editFooter: document.getElementById("editFooter"),
+      cancelBtn: document.getElementById("cancelBtn"),
+      saveBtn: document.getElementById("saveBtn"),
       addModal: document.getElementById("addModal"),
       addForm: document.getElementById("addForm"),
       closeAdd: document.getElementById("closeAdd"),
@@ -332,10 +341,9 @@
       cancelUnlock: document.getElementById("cancelUnlock"),
     };
 
-    // Don’t let clicks inside the panel close the modal
+    // Prevent overlay from closing when clicking inside panel
     els.profilePanel.addEventListener("click", (e)=> e.stopPropagation());
 
-    // Pick two distinct creators
     function pickTwo() {
       if (creators.length < 2) return [];
       let i = Math.floor(Math.random() * creators.length);
@@ -399,14 +407,16 @@
       els.editPreview.src = c.image || "";
     }
 
+    function isAdmin(){ return sessionStorage.getItem(ADMIN_FLAG) === "1"; }
+
     function toggleEdit(on) {
       editMode = !!on;
       els.profileView.classList.toggle("hidden", editMode);
       els.profileEdit.classList.toggle("hidden", !editMode);
-      els.editBtn.classList.toggle("hidden", !isAdmin());
-      els.saveBtn.classList.toggle("hidden", !editMode);
-      els.cancelBtn.classList.toggle("hidden", !editMode);
-      els.deleteBtn.classList.toggle("hidden", editMode || !isAdmin());
+      els.editFooter.classList.toggle("hidden", !editMode);
+      // header buttons
+      els.editBtn.classList.toggle("hidden", !isAdmin() || editMode);
+      els.deleteBtn.classList.toggle("hidden", !isAdmin() || editMode);
     }
 
     function openProfile(id) {
@@ -418,7 +428,6 @@
       els.deleteBtn.classList.toggle("hidden", !isAdmin());
       toggleEdit(false);
       els.profileModal.classList.remove("hidden");
-      els.profileModal.classList.add("flex");
     }
 
     // Voting
@@ -443,23 +452,20 @@
     document.getElementById("nameA").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[0]) openProfile(currentPair[0].id); });
     document.getElementById("nameB").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[1]) openProfile(currentPair[1].id); });
 
-    // Close modals (overlay only)
-    els.profileModal.addEventListener("click", (e)=> {
-      if (e.target === els.profileModal) els.closeModal.click();
+    // Close modals (overlay click)
+    document.getElementById("profileModal").addEventListener("click", (e)=> {
+      if (e.target === document.getElementById("profileModal")) els.closeModal.click();
     });
     els.closeModal.addEventListener("click", ()=> {
       els.profileModal.classList.add("hidden");
-      els.profileModal.classList.remove("flex");
-      openProfileId = null;
-      toggleEdit(false);
+      openProfileId = null; toggleEdit(false);
     });
 
-    // ===== Delete creator (admin only) =====
+    // Delete creator (admin)
     els.deleteBtn.addEventListener("click", ()=>{
       if (!isAdmin()) return alert("Admin locked.");
       if (!openProfileId) return;
-      const c = creators.find(x=>x.id===openProfileId);
-      if (!c) return;
+      const c = creators.find(x=>x.id===openProfileId); if (!c) return;
       if (!confirm(`Delete "${c.name}"? This cannot be undone.`)) return;
       creators = creators.filter(x=>x.id !== openProfileId);
       saveCreators(creators);
@@ -468,31 +474,15 @@
       alert("Creator deleted.");
     });
 
-    // ===== Edit flow (admin only) =====
-    function isAdmin(){ return sessionStorage.getItem(ADMIN_FLAG) === "1"; }
-
+    // Edit flow
     els.editBtn.addEventListener("click", ()=>{
       if (!isAdmin()) return alert("Admin locked.");
       if (!openProfileId) return;
-      const c = creators.find(x=>x.id===openProfileId);
-      if (!c) return;
-      populateEdit(c);
-      toggleEdit(true);
+      const c = creators.find(x=>x.id===openProfileId); if (!c) return;
+      populateEdit(c); toggleEdit(true);
     });
 
-    // live preview while editing
-    els.profileEdit.image.addEventListener("input", ()=>{
-      els.editPreview.src = els.profileEdit.image.value.trim();
-    });
-
-    // prevent enter-key form submit closing modal; also allow Ctrl/Cmd+Enter to save
-    els.profileEdit.addEventListener("submit", (e)=> {
-      e.preventDefault();
-      doSave();
-    });
-    els.profileEdit.addEventListener("keydown", (e)=> {
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); doSave(); }
-    });
+    els.profileEdit.image.addEventListener("input", ()=>{ els.editPreview.src = els.profileEdit.image.value.trim(); });
 
     function doSave(){
       if (!isAdmin()) return alert("Admin locked.");
@@ -507,30 +497,29 @@
         onlyfans: f.onlyfans.value.trim(),
       };
       if (!updated.name || !updated.image) return alert("Name and image are required.");
-      const idx = creators.findIndex(x=>x.id===openProfileId);
-      if (idx === -1) return;
+      const idx = creators.findIndex(x=>x.id===openProfileId); if (idx === -1) return;
       creators[idx] = { ...creators[idx], ...updated };
       saveCreators(creators);
-      populateView(creators[idx]);
-      renderBoard();
-      toggleEdit(false);
-      alert("Profile updated.");
+      populateView(creators[idx]); renderBoard();
+      toggleEdit(false); alert("Profile updated.");
     }
 
-    els.saveBtn.addEventListener("click", (e)=> { e.preventDefault(); doSave(); });
-    els.cancelBtn.addEventListener("click", ()=> {
-      toggleEdit(false);
-      if (openProfileId) populateView(creators.find(x=>x.id===openProfileId) || {});
-    });
+    // Save / Cancel buttons in persistent footer
+    els.saveBtn.addEventListener("click", (e)=>{ e.preventDefault(); doSave(); });
+    els.cancelBtn.addEventListener("click", ()=>{ toggleEdit(false); if (openProfileId) populateView(creators.find(x=>x.id===openProfileId) || {}); });
 
-    // ===== Admin gating =====
+    // Submit & Cmd/Ctrl+Enter
+    els.profileEdit.addEventListener("submit", (e)=>{ e.preventDefault(); doSave(); });
+    els.profileEdit.addEventListener("keydown", (e)=>{ if ((e.ctrlKey||e.metaKey) && e.key === "Enter") { e.preventDefault(); doSave(); } });
+
+    // Admin gating
     function updateAdminUI() {
       const admin = isAdmin();
       els.addBtn.classList.toggle("hidden", !admin);
       els.lockIcon.textContent = admin ? "🔓" : "🔒";
       els.lockLabel.textContent = admin ? "Admin Unlocked" : "Unlock Admin";
       if (openProfileId !== null) {
-        els.editBtn.classList.toggle("hidden", !admin);
+        els.editBtn.classList.toggle("hidden", !admin || editMode);
         els.deleteBtn.classList.toggle("hidden", !admin || editMode);
       }
     }
@@ -538,57 +527,36 @@
     els.unlockBtn.addEventListener("click", ()=>{
       const admin = isAdmin();
       if (admin) {
-        if (confirm("Lock admin?")) {
-          sessionStorage.removeItem(ADMIN_FLAG);
-          updateAdminUI();
-        }
+        if (confirm("Lock admin?")) { sessionStorage.removeItem(ADMIN_FLAG); updateAdminUI(); }
       } else {
-        els.unlockModal.classList.remove("hidden");
-        els.unlockModal.classList.add("flex");
-        setTimeout(()=> {
-          const inp = els.unlockForm.querySelector('input[name="pass"]');
-          if (inp) inp.focus();
-        }, 50);
+        document.getElementById("unlockModal").classList.remove("hidden");
       }
     });
-
-    document.getElementById("cancelUnlock").addEventListener("click", ()=>{
-      els.unlockModal.classList.add("hidden");
-      els.unlockModal.classList.remove("flex");
+    els.cancelUnlock.addEventListener("click", ()=>{
+      document.getElementById("unlockModal").classList.add("hidden");
       els.unlockForm.reset();
     });
-    els.unlockModal.addEventListener("click", (e)=> { if (e.target === els.unlockModal) document.getElementById("cancelUnlock").click(); });
+    document.getElementById("unlockModal").addEventListener("click", (e)=>{ if (e.target === document.getElementById("unlockModal")) els.cancelUnlock.click(); });
     els.unlockForm.addEventListener("submit", (e)=>{
       e.preventDefault();
       const fd = new FormData(els.unlockForm);
       const pass = (fd.get("pass")||"").toString();
-      if (pass === ADMIN_PASS) {
-        sessionStorage.setItem(ADMIN_FLAG, "1");
-        updateAdminUI();
-        document.getElementById("cancelUnlock").click();
-      } else {
-        alert("Incorrect password.");
-      }
+      if (pass === ADMIN_PASS) { sessionStorage.setItem(ADMIN_FLAG, "1"); updateAdminUI(); els.cancelUnlock.click(); }
+      else alert("Incorrect password.");
     });
 
-    // ===== Add creator (admin only) =====
+    // Add creator (admin only)
     document.getElementById("addBtn").addEventListener("click", ()=>{
       if (!isAdmin()) return alert("Admin locked.");
-      els.addModal.classList.remove("hidden");
-      els.addModal.classList.add("flex");
+      document.getElementById("addModal").classList.remove("hidden");
     });
-    els.closeAdd.addEventListener("click", ()=>{
-      els.addModal.classList.add("hidden");
-      els.addModal.classList.remove("flex");
-    });
-    els.addModal.addEventListener("click", (e)=> { if (e.target === els.addModal) els.closeAdd.click(); });
+    els.closeAdd.addEventListener("click", ()=>{ document.getElementById("addModal").classList.add("hidden"); });
+    document.getElementById("addModal").addEventListener("click", (e)=> { if (e.target === document.getElementById("addModal")) els.closeAdd.click(); });
 
     els.addForm.addEventListener("submit", (e)=>{
-      e.preventDefault();
-      if (!isAdmin()) return alert("Admin locked.");
+      e.preventDefault(); if (!isAdmin()) return alert("Admin locked.");
       const fd = new FormData(els.addForm);
-      const isAdult = !!fd.get("adult");
-      if (!isAdult) return alert("Adult & consent confirmation is required.");
+      const isAdult = !!fd.get("adult"); if (!isAdult) return alert("Adult & consent confirmation is required.");
       const creator = {
         id: crypto.randomUUID(),
         name: (fd.get("name")||"").toString().trim(),
@@ -600,35 +568,26 @@
         elo: 1200, wins: 0, losses: 0
       };
       if (!creator.name || !creator.image) return alert("Name and image are required.");
-      creators.push(creator);
-      saveCreators(creators);
-      renderBoard(); renderArena();
-      els.closeAdd.click(); els.addForm.reset();
+      creators.push(creator); saveCreators(creators);
+      renderBoard(); renderArena(); document.getElementById("addModal").classList.add("hidden"); els.addForm.reset();
       alert("Creator saved.");
     });
 
     // Export/Import handlers
     els.exportBtn.addEventListener("click", exportCreators);
-    els.importInput.addEventListener("change", (e)=>{
-      const f = e.target.files?.[0];
-      if (f) importCreators(f).finally(()=> { e.target.value = ""; });
-    });
+    els.importInput.addEventListener("change", (e)=>{ const f = e.target.files?.[0]; if (f) importCreators(f).finally(()=> { e.target.value = ""; }); });
 
     // Reset
     els.resetBtn.addEventListener("click", ()=>{
       if (!confirm("Reset demo data? This clears your local list.")) return;
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(VOTE_LOG_KEY);
-      creators = loadCreators();
-      renderBoard(); renderArena();
+      localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(VOTE_LOG_KEY);
+      creators = loadCreators(); renderBoard(); renderArena();
       scrollTo({top:0, behavior:"smooth"});
     });
 
     // Init
-    updateAdminUI();
-    renderBoard(); renderArena();
-    const m = location.hash.match(/^#profile-(.+)$/);
-    if (m) openProfile(m[1]);
+    updateAdminUI(); renderBoard(); renderArena();
+    const m = location.hash.match(/^#profile-(.+)$/); if (m) openProfile(m[1]);
 
     // Keep multiple tabs in sync
     window.addEventListener("storage", (e)=>{
