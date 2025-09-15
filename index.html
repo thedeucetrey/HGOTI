@@ -16,12 +16,16 @@
 </head>
 <body class="min-h-screen bg-gradient-to-b from-white to-zinc-50 text-zinc-900 antialiased">
   <header class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Girl on the Internet</h1>
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Woman on the Internet</h1>
     <nav class="flex items-center gap-2 text-sm">
       <button id="unlockBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 flex items-center gap-1">
         <span id="lockIcon">🔒</span><span id="lockLabel">Unlock Admin</span>
       </button>
       <button id="addBtn" class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800 hidden">Add Creator</button>
+      <button id="exportBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Export JSON</button>
+      <label class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 cursor-pointer">
+        Import JSON <input id="importInput" type="file" accept="application/json" class="hidden" />
+      </label>
       <button id="resetBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Reset Demo</button>
     </nav>
   </header>
@@ -99,7 +103,10 @@
     <div class="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden">
       <div class="flex items-center justify-between p-4 border-b border-zinc-200">
         <h3 id="profileName" class="text-lg font-bold"></h3>
-        <button id="closeModal" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
+        <div class="flex items-center gap-2">
+          <button id="deleteBtn" class="btn hidden px-2 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Delete</button>
+          <button id="closeModal" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
+        </div>
       </div>
       <div class="grid grid-cols-2 gap-0">
         <div class="col-span-2 sm:col-span-1">
@@ -158,63 +165,34 @@
 
   <script>
     // ===== Admin password (demo only) =====
-    // Change this to whatever you want for local testing.
-    // In production, do NOT store secrets client-side.
     const ADMIN_PASS = "changeme";
 
     // ===== Storage keys =====
-    const STORAGE_KEY = "hwoi_creators_v2";
-    const VOTE_LOG_KEY = "hwoi_vote_log_v2";
+    const STORAGE_KEY = "hwoi_creators_v3"; // bumped version
+    const VOTE_LOG_KEY = "hwoi_vote_log_v3";
     const ADMIN_FLAG = "hwoi_is_admin";
 
     // ===== Default women creators (placeholders) =====
     const DEFAULT_CREATORS = [
-      {
-        id: crypto.randomUUID(),
-        name: "Ava Hart",
+      { id: crypto.randomUUID(), name: "Ava Hart",
         image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=900&auto=format&fit=crop",
-        tags: ["streamer","fitness"],
-        bio: "Lifestyle & fitness creator.",
-        x: "#",
-        onlyfans: "#",
-        elo: 1200, wins: 0, losses: 0
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Maya Chen",
+        tags: ["streamer","fitness"], bio: "Lifestyle & fitness creator.", x: "#", onlyfans: "#", elo: 1200, wins: 0, losses: 0 },
+      { id: crypto.randomUUID(), name: "Maya Chen",
         image: "https://images.unsplash.com/photo-1544005317-3f6f2b1d2b09?q=80&w=900&auto=format&fit=crop",
-        tags: ["tech","gaming"],
-        bio: "Gamer & tech reviewer.",
-        x: "#",
-        onlyfans: "",
-        elo: 1200, wins: 0, losses: 0
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Luna Rossi",
+        tags: ["tech","gaming"], bio: "Gamer & tech reviewer.", x: "#", onlyfans: "", elo: 1200, wins: 0, losses: 0 },
+      { id: crypto.randomUUID(), name: "Luna Rossi",
         image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=900&auto=format&fit=crop",
-        tags: ["fashion","travel"],
-        bio: "Fashion & travel vlogs.",
-        x: "#",
-        onlyfans: "#",
-        elo: 1200, wins: 0, losses: 0
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Noor Al-Khaled",
+        tags: ["fashion","travel"], bio: "Fashion & travel vlogs.", x: "#", onlyfans: "#", elo: 1200, wins: 0, losses: 0 },
+      { id: crypto.randomUUID(), name: "Noor Al-Khaled",
         image: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=900&auto=format&fit=crop",
-        tags: ["beauty","skincare"],
-        bio: "Skincare educator.",
-        x: "#",
-        onlyfans: "",
-        elo: 1200, wins: 0, losses: 0
-      }
+        tags: ["beauty","skincare"], bio: "Skincare educator.", x: "#", onlyfans: "", elo: 1200, wins: 0, losses: 0 }
     ];
 
     // ===== Helpers =====
     function loadCreators() {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : DEFAULT_CREATORS;
+      try { return raw ? JSON.parse(raw) : DEFAULT_CREATORS; }
+      catch { return DEFAULT_CREATORS; }
     }
     function saveCreators(creators) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(creators));
@@ -224,6 +202,40 @@
       log.push({ t: Date.now(), aId, bId, winnerId });
       localStorage.setItem(VOTE_LOG_KEY, JSON.stringify(log));
     }
+    function assertCreatorShape(obj){
+      return obj && typeof obj.id==="string" && typeof obj.name==="string" && typeof obj.image==="string";
+    }
+
+    // Export/Import
+    function exportCreators() {
+      const data = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        creators
+      };
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "hwoi_creators.json";
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+    async function importCreators(file) {
+      try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        const list = Array.isArray(json) ? json : json.creators; // allow raw array or wrapped
+        if (!Array.isArray(list)) throw new Error("Invalid JSON format");
+        const cleaned = list.filter(assertCreatorShape);
+        if (cleaned.length === 0) throw new Error("No valid creators found.");
+        creators = cleaned;
+        saveCreators(creators);
+        renderBoard(); renderArena();
+        alert(`Imported ${cleaned.length} creators.`);
+      } catch (e) {
+        alert("Import failed: " + e.message);
+      }
+    }
 
     // Elo
     function expectedScore(rA, rB) { return 1 / (1 + Math.pow(10, (rB - rA) / 400)); }
@@ -231,18 +243,14 @@
     function applyElo(a, b, winner) {
       const EA = expectedScore(a.elo, b.elo), EB = expectedScore(b.elo, a.elo);
       const KA = kFactor(a.elo), KB = kFactor(b.elo);
-      if (winner === "A") {
-        a.elo = Math.round(a.elo + KA * (1 - EA)); a.wins++;
-        b.elo = Math.round(b.elo + KB * (0 - EB)); b.losses++;
-      } else {
-        a.elo = Math.round(a.elo + KA * (0 - EA)); a.losses++;
-        b.elo = Math.round(b.elo + KB * (1 - EB)); b.wins++;
-      }
+      if (winner === "A") { a.elo = Math.round(a.elo + KA * (1 - EA)); a.wins++; b.elo = Math.round(b.elo + KB * (0 - EB)); b.losses++; }
+      else { a.elo = Math.round(a.elo + KA * (0 - EA)); a.losses++; b.elo = Math.round(b.elo + KB * (1 - EB)); b.wins++; }
     }
 
     // ===== UI state =====
     let creators = loadCreators();
     let currentPair = [];
+    let openProfileId = null;
 
     const els = {
       imgA: document.getElementById("imgA"),
@@ -255,6 +263,8 @@
       voteB: document.getElementById("voteB"),
       board: document.getElementById("board"),
       resetBtn: document.getElementById("resetBtn"),
+      exportBtn: document.getElementById("exportBtn"),
+      importInput: document.getElementById("importInput"),
       addBtn: document.getElementById("addBtn"),
       unlockBtn: document.getElementById("unlockBtn"),
       lockIcon: document.getElementById("lockIcon"),
@@ -268,6 +278,7 @@
       profileStats: document.getElementById("profileStats"),
       profileLinks: document.getElementById("profileLinks"),
       closeModal: document.getElementById("closeModal"),
+      deleteBtn: document.getElementById("deleteBtn"),
       // add modal
       addModal: document.getElementById("addModal"),
       addForm: document.getElementById("addForm"),
@@ -289,6 +300,13 @@
 
     function renderArena() {
       currentPair = pickTwo();
+      if (currentPair.length < 2) {
+        // Clear arena if not enough creators
+        els.imgA.src = ""; els.imgB.src = "";
+        els.nameA.textContent = "Add more creators"; els.nameB.textContent = "";
+        els.tagA.textContent = ""; els.tagB.textContent = "";
+        return;
+      }
       const [A,B] = currentPair;
       els.imgA.src = A.image; els.imgA.alt = A.name;
       els.imgB.src = B.image; els.imgB.alt = B.name;
@@ -314,6 +332,7 @@
     function openProfile(id) {
       const c = creators.find(x=>x.id===id);
       if (!c) return;
+      openProfileId = id;
       els.profileName.textContent = c.name;
       els.profileImg.src = c.image; els.profileImg.alt = c.name;
       els.profileBio.textContent = c.bio || "—";
@@ -325,6 +344,11 @@
       els.profileLinks.innerHTML = links.map(l=>`
         <a href="${l.url}" target="_blank" rel="noopener" class="px-2 py-1 rounded-lg border border-zinc-300 hover:bg-zinc-50 text-xs">${l.label}</a>
       `).join("");
+
+      // admin-only delete button
+      const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
+      els.deleteBtn.classList.toggle("hidden", !isAdmin);
+
       els.profileModal.classList.remove("hidden");
       els.profileModal.classList.add("flex");
     }
@@ -348,28 +372,45 @@
       const m = location.hash.match(/^#profile-(.+)$/);
       if (m) openProfile(m[1]);
     });
-    document.getElementById("nameA").addEventListener("click",(e)=>{ e.preventDefault(); openProfile(currentPair[0].id); });
-    document.getElementById("nameB").addEventListener("click",(e)=>{ e.preventDefault(); openProfile(currentPair[1].id); });
+    document.getElementById("nameA").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[0]) openProfile(currentPair[0].id); });
+    document.getElementById("nameB").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[1]) openProfile(currentPair[1].id); });
 
     // Close modals
     els.closeModal.addEventListener("click", ()=> {
       els.profileModal.classList.add("hidden");
       els.profileModal.classList.remove("flex");
+      openProfileId = null;
     });
     els.profileModal.addEventListener("click", (e)=> { if (e.target === els.profileModal) els.closeModal.click(); });
 
+    // ===== Delete creator (admin only) =====
+    els.deleteBtn.addEventListener("click", ()=>{
+      if (sessionStorage.getItem(ADMIN_FLAG) !== "1") return alert("Admin locked.");
+      if (!openProfileId) return;
+      const c = creators.find(x=>x.id===openProfileId);
+      if (!c) return;
+      if (!confirm(`Delete "${c.name}"? This cannot be undone.`)) return;
+      creators = creators.filter(x=>x.id !== openProfileId);
+      saveCreators(creators);
+      els.closeModal.click();
+      renderBoard(); renderArena();
+      alert("Creator deleted.");
+    });
+
     // ===== Admin gating =====
+    const elsUnlock = { unlockBtn: document.getElementById("unlockBtn") };
     function updateAdminUI() {
       const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
       els.addBtn.classList.toggle("hidden", !isAdmin);
       els.lockIcon.textContent = isAdmin ? "🔓" : "🔒";
       els.lockLabel.textContent = isAdmin ? "Admin Unlocked" : "Unlock Admin";
+      // reflect in profile modal (if open)
+      if (openProfileId !== null) els.deleteBtn.classList.toggle("hidden", !isAdmin);
     }
 
     els.unlockBtn.addEventListener("click", ()=>{
       const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
       if (isAdmin) {
-        // lock again
         if (confirm("Lock admin?")) {
           sessionStorage.removeItem(ADMIN_FLAG);
           updateAdminUI();
@@ -377,7 +418,6 @@
       } else {
         els.unlockModal.classList.remove("hidden");
         els.unlockModal.classList.add("flex");
-        // focus input
         setTimeout(()=> {
           const inp = els.unlockForm.querySelector('input[name="pass"]');
           if (inp) inp.focus();
@@ -442,11 +482,19 @@
       saveCreators(creators);
       renderBoard(); renderArena();
       els.closeAdd.click(); els.addForm.reset();
+      alert("Creator saved.");
+    });
+
+    // Export/Import handlers
+    els.exportBtn.addEventListener("click", exportCreators);
+    els.importInput.addEventListener("change", (e)=>{
+      const f = e.target.files?.[0];
+      if (f) importCreators(f).finally(()=> { e.target.value = ""; });
     });
 
     // Reset
     els.resetBtn.addEventListener("click", ()=>{
-      if (!confirm("Reset demo data?")) return;
+      if (!confirm("Reset demo data? This clears your local list.")) return;
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(VOTE_LOG_KEY);
       creators = loadCreators();
@@ -459,6 +507,14 @@
     renderBoard(); renderArena();
     const m = location.hash.match(/^#profile-(.+)$/);
     if (m) openProfile(m[1]);
+
+    // Keep multiple tabs in sync
+    window.addEventListener("storage", (e)=>{
+      if (e.key === STORAGE_KEY) {
+        try { creators = JSON.parse(e.newValue || "[]"); } catch {}
+        renderBoard(); renderArena();
+      }
+    });
   </script>
 </body>
 </html>
