@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hottest Woman on the Internet — MVP</title>
+  <meta name="description" content="An Elo-style head-to-head ranking of internet creators." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { color-scheme: light dark; }
+    .card { box-shadow: 0 10px 25px rgba(0,0,0,.08); }
+    .btn { transition: transform .05s ease; }
+    .btn:active { transform: translateY(1px) scale(.99); }
+    .skeleton { background: linear-gradient(90deg, #eee, #f6f6f6, #eee); background-size: 200% 100%; animation: sk 1.2s linear infinite; }
+    @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-white to-zinc-50 text-zinc-900 antialiased">
+  <header class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Woman on the Internet</h1>
+    <nav class="flex items-center gap-2 text-sm">
+      <button id="addBtn" class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800">Add Creator</button>
+      <button id="resetBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Reset Demo</button>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pb-20">
+    <!-- VS Arena -->
+    <section aria-label="vote arena" class="mt-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left -->
+        <article id="cardA" class="card rounded-2xl overflow-hidden bg-white border border-zinc-200">
+          <div class="aspect-[4/5] bg-zinc-100 overflow-hidden">
+            <img id="imgA" alt="" class="w-full h-full object-cover" />
+          </div>
+          <div class="p-4 flex items-center justify-between gap-2">
+            <div>
+              <a id="nameA" href="#" class="text-lg font-semibold hover:underline"></a>
+              <p id="tagA" class="text-xs text-zinc-500"></p>
+            </div>
+            <button id="voteA" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400">Vote</button>
+          </div>
+        </article>
+
+        <!-- Right -->
+        <article id="cardB" class="card rounded-2xl overflow-hidden bg-white border border-zinc-200">
+          <div class="aspect-[4/5] bg-zinc-100 overflow-hidden">
+            <img id="imgB" alt="" class="w-full h-full object-cover" />
+          </div>
+          <div class="p-4 flex items-center justify-between gap-2">
+            <div>
+              <a id="nameB" href="#" class="text-lg font-semibold hover:underline"></a>
+              <p id="tagB" class="text-xs text-zinc-500"></p>
+            </div>
+            <button id="voteB" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400">Vote</button>
+          </div>
+        </article>
+      </div>
+
+      <!-- VS label -->
+      <div class="relative my-6">
+        <div class="h-px bg-gradient-to-r from-transparent via-zinc-300 to-transparent"></div>
+        <div class="absolute inset-0 flex items-center justify-center -mt-3">
+          <span class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-zinc-200 text-xs font-medium">Head-to-Head</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section aria-label="leaderboard" class="mt-2">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-bold">Leaderboard</h2>
+        <div class="text-xs text-zinc-500">Click a name to view profile</div>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+        <table class="w-full text-sm">
+          <thead class="bg-zinc-50 text-zinc-600">
+            <tr>
+              <th class="text-left p-3">#</th>
+              <th class="text-left p-3">Creator</th>
+              <th class="text-left p-3">Tags</th>
+              <th class="text-right p-3">Elo</th>
+              <th class="text-right p-3">W-L</th>
+            </tr>
+          </thead>
+          <tbody id="board"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="mt-10 text-xs text-zinc-500">
+      <p>Demo data is stored in your browser. Replace with your own roster and add a backend for real votes. Please ensure age verification, consent to be listed, and a respectful code of conduct.</p>
+    </footer>
+  </main>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="fixed inset-0 hidden items-end sm:items-center justify-center z-50">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-zinc-200">
+        <h3 id="profileName" class="text-lg font-bold"></h3>
+        <button id="closeModal" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
+      </div>
+      <div class="grid grid-cols-2 gap-0">
+        <div class="col-span-2 sm:col-span-1">
+          <img id="profileImg" alt="" class="w-full h-full object-cover" />
+        </div>
+        <div class="col-span-2 sm:col-span-1 p-4 space-y-3">
+          <p id="profileBio" class="text-sm text-zinc-700"></p>
+          <div class="text-xs text-zinc-500"><span class="font-medium">Tags:</span> <span id="profileTags"></span></div>
+          <div class="text-xs text-zinc-500"><span class="font-medium">Stats:</span> <span id="profileStats"></span></div>
+          <div id="profileLinks" class="flex flex-wrap gap-2 pt-1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Creator Modal -->
+  <div id="addModal" class="fixed inset-0 hidden items-center justify-center z-50">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <form id="addForm" class="relative bg-white w-full sm:max-w-lg rounded-2xl overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-zinc-200">
+        <h3 class="text-lg font-bold">Add Creator</h3>
+        <button type="button" id="closeAdd" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
+      </div>
+      <div class="p-4 grid grid-cols-1 gap-3">
+        <input required name="name" placeholder="Display name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input required name="image" placeholder="Image URL (square/portrait)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="tags" placeholder="Tags (comma-separated)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <textarea name="bio" placeholder="Short bio (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2"></textarea>
+        <input name="link1" placeholder="Link 1 (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="link2" placeholder="Link 2 (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <button class="btn rounded-xl px-5 py-2.5 bg-zinc-900 text-white hover:bg-zinc-800">Add</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // -------------------------
+    // Storage helpers (local demo)
+    // -------------------------
+    const STORAGE_KEY = "hwoi_creators_v1";
+    const VOTE_LOG_KEY = "hwoi_vote_log_v1";
+
+    const DEFAULT_CREATORS = [
+      {
+        id: crypto.randomUUID(), name: "Ava Hart", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=900&auto=format&fit=crop",
+        tags: ["fitness","vlogs"], bio: "Lifestyle + fitness content.",
+        links: [{label:"Insta", url:"#"}, {label:"YouTube", url:"#"}],
+        elo: 1200, wins: 0, losses: 0
+      },
+      {
+        id: crypto.randomUUID(), name: "Maya Chen", image: "https://images.unsplash.com/photo-1544005317-3f6f2b1d2b09?q=80&w=900&auto=format&fit=crop",
+        tags: ["tech","gaming"], bio: "Streams and tech reviews.",
+        links: [{label:"Twitch", url:"#"}],
+        elo: 1200, wins: 0, losses: 0
+      },
+      {
+        id: crypto.randomUUID(), name: "Luna Rossi", image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=900&auto=format&fit=crop",
+        tags: ["fashion","travel"], bio: "Fashion & travel journals.",
+        links: [{label:"TikTok", url:"#"}],
+        elo: 1200, wins: 0, losses: 0
+      },
+      {
+        id: crypto.randomUUID(), name: "Noor Al-Khaled", image: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=900&auto=format&fit=crop",
+        tags: ["beauty","skincare"], bio: "Skincare science explained.",
+        links: [{label:"Blog", url:"#"}],
+        elo: 1200, wins: 0, losses: 0
+      }
+    ];
+
+    function loadCreators() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : DEFAULT_CREATORS;
+    }
+    function saveCreators(creators) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(creators));
+    }
+    function logVote(aId,bId,winnerId) {
+      const log = JSON.parse(localStorage.getItem(VOTE_LOG_KEY) || "[]");
+      log.push({ t: Date.now(), aId, bId, winnerId });
+      localStorage.setItem(VOTE_LOG_KEY, JSON.stringify(log));
+    }
+
+    // -------------------------
+    // Elo utilities
+    // -------------------------
+    function expectedScore(rA, rB) { return 1 / (1 + Math.pow(10, (rB - rA) / 400)); }
+    function kFactor(elo) {
+      // Lower K at higher rating for stability
+      if (elo < 1200) return 40;
+      if (elo < 1600) return 32;
+      if (elo < 2000) return 24;
+      return 16;
+    }
+    function applyElo(a, b, winner) {
+      const EA = expectedScore(a.elo, b.elo);
+      const EB = expectedScore(b.elo, a.elo);
+      const KA = kFactor(a.elo);
+      const KB = kFactor(b.elo);
+      if (winner === "A") {
+        a.elo = Math.round(a.elo + KA * (1 - EA));
+        b.elo = Math.round(b.elo + KB * (0 - EB));
+        a.wins++; b.losses++;
+      } else {
+        a.elo = Math.round(a.elo + KA * (0 - EA));
+        b.elo = Math.round(b.elo + KB * (1 - EB));
+        a.losses++; b.wins++;
+      }
+    }
+
+    // -------------------------
+    // UI state
+    // -------------------------
+    let creators = loadCreators();
+    let currentPair = [];
+
+    const els = {
+      imgA: document.getElementById("imgA"),
+      imgB: document.getElementById("imgB"),
+      nameA: document.getElementById("nameA"),
+      nameB: document.getElementById("nameB"),
+      tagA: document.getElementById("tagA"),
+      tagB: document.getElementById("tagB"),
+      voteA: document.getElementById("voteA"),
+      voteB: document.getElementById("voteB"),
+      board: document.getElementById("board"),
+      resetBtn: document.getElementById("resetBtn"),
+      addBtn: document.getElementById("addBtn"),
+      // profile modal
+      profileModal: document.getElementById("profileModal"),
+      profileName: document.getElementById("profileName"),
+      profileImg: document.getElementById("profileImg"),
+      profileBio: document.getElementById("profileBio"),
+      profileTags: document.getElementById("profileTags"),
+      profileStats: document.getElementById("profileStats"),
+      profileLinks: document.getElementById("profileLinks"),
+      closeModal: document.getElementById("closeModal"),
+      // add modal
+      addModal: document.getElementById("addModal"),
+      addForm: document.getElementById("addForm"),
+      closeAdd: document.getElementById("closeAdd"),
+    };
+
+    function pickTwo() {
+      if (creators.length < 2) return [];
+      let i = Math.floor(Math.random() * creators.length);
+      let j = i;
+      while (j === i) j = Math.floor(Math.random() * creators.length);
+      return [creators[i], creators[j]];
+    }
+
+    function renderArena() {
+      currentPair = pickTwo();
+      const [A,B] = currentPair;
+      els.imgA.src = A.image; els.imgA.alt = A.name;
+      els.imgB.src = B.image; els.imgB.alt = B.name;
+      els.nameA.textContent = A.name; els.nameA.href = "#profile-"+A.id;
+      els.nameB.textContent = B.name; els.nameB.href = "#profile-"+B.id;
+      els.tagA.textContent = A.tags?.slice(0,2).join(" · ") || "";
+      els.tagB.textContent = B.tags?.slice(0,2).join(" · ") || "";
+    }
+
+    function renderBoard() {
+      const sorted = [...creators].sort((a,b)=>b.elo - a.elo);
+      els.board.innerHTML = sorted.map((c,idx)=>`
+        <tr class="${idx % 2 ? 'bg-white' : 'bg-zinc-50/60'}">
+          <td class="p-3">${idx+1}</td>
+          <td class="p-3">
+            <a href="#profile-${c.id}" class="font-medium hover:underline">${c.name}</a>
+          </td>
+          <td class="p-3 text-zinc-500">${(c.tags||[]).join(", ")}</td>
+          <td class="p-3 text-right font-semibold">${c.elo}</td>
+          <td class="p-3 text-right">${c.wins}-${c.losses}</td>
+        </tr>
+      `).join("");
+    }
+
+    function openProfile(id) {
+      const c = creators.find(x=>x.id===id);
+      if (!c) return;
+      els.profileName.textContent = c.name;
+      els.profileImg.src = c.image; els.profileImg.alt = c.name;
+      els.profileBio.textContent = c.bio || "—";
+      els.profileTags.textContent = (c.tags||[]).join(", ") || "—";
+      els.profileStats.textContent = `Elo ${c.elo} • ${c.wins}-${c.losses}`;
+      els.profileLinks.innerHTML = (c.links||[]).map(l=>`
+        <a href="${l.url}" target="_blank" rel="noopener" class="px-2 py-1 rounded-lg border border-zinc-300 hover:bg-zinc-50 text-xs">${l.label}</a>
+      `).join("");
+      els.profileModal.classList.remove("hidden");
+      els.profileModal.classList.add("flex");
+    }
+
+    // vote handlers
+    els.voteA.addEventListener("click", ()=> {
+      if (currentPair.length<2) return;
+      const [A,B] = currentPair;
+      applyElo(A,B,"A");
+      saveCreators(creators);
+      logVote(A.id, B.id, A.id);
+      renderBoard(); renderArena();
+    });
+    els.voteB.addEventListener("click", ()=> {
+      if (currentPair.length<2) return;
+      const [A,B] = currentPair;
+      applyElo(A,B,"B");
+      saveCreators(creators);
+      logVote(A.id, B.id, B.id);
+      renderBoard(); renderArena();
+    });
+
+    // Profile deep links
+    window.addEventListener("hashchange", ()=>{
+      const h = location.hash;
+      const m = h.match(/^#profile-(.+)$/);
+      if (m) openProfile(m[1]);
+    });
+
+    // Click names in arena open profile
+    document.getElementById("nameA").addEventListener("click",(e)=> {
+      e.preventDefault(); openProfile(currentPair[0].id);
+    });
+    document.getElementById("nameB").addEventListener("click",(e)=> {
+      e.preventDefault(); openProfile(currentPair[1].id);
+    });
+
+    // Close modals
+    els.closeModal.addEventListener("click", ()=> {
+      els.profileModal.classList.add("hidden");
+      els.profileModal.classList.remove("flex");
+    });
+    els.profileModal.addEventListener("click", (e)=> {
+      if (e.target === els.profileModal) els.closeModal.click();
+    });
+
+    // Add creator modal
+    document.getElementById("addBtn").addEventListener("click", ()=>{
+      els.addModal.classList.remove("hidden");
+      els.addModal.classList.add("flex");
+    });
+    els.closeAdd.addEventListener("click", ()=>{
+      els.addModal.classList.add("hidden");
+      els.addModal.classList.remove("flex");
+    });
+    els.addModal.addEventListener("click", (e)=> {
+      if (e.target === els.addModal) els.closeAdd.click();
+    });
+    els.addForm.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const fd = new FormData(els.addForm);
+      const creator = {
+        id: crypto.randomUUID(),
+        name: (fd.get("name")||"").toString().trim(),
+        image: (fd.get("image")||"").toString().trim(),
+        tags: (fd.get("tags")||"").toString().split(",").map(s=>s.trim()).filter(Boolean),
+        bio: (fd.get("bio")||"").toString().trim(),
+        links: [fd.get("link1"), fd.get("link2")].filter(Boolean).map((url,i)=>({label:`Link ${i+1}`, url})),
+        elo: 1200, wins: 0, losses: 0
+      };
+      if (!creator.name || !creator.image) return;
+      creators.push(creator);
+      saveCreators(creators);
+      renderBoard(); renderArena();
+      els.closeAdd.click();
+      els.addForm.reset();
+    });
+
+    // Reset
+    els.resetBtn.addEventListener("click", ()=>{
+      if (!confirm("Reset demo data?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(VOTE_LOG_KEY);
+      creators = loadCreators();
+      renderBoard(); renderArena();
+      scrollTo({top:0, behavior:"smooth"});
+    });
+
+    // Init
+    renderBoard(); renderArena();
+    // Open profile if linked directly
+    const m = location.hash.match(/^#profile-(.+)$/);
+    if (m) openProfile(m[1]);
+  </script>
+</body>
+</html>
