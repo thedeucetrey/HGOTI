@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hottest Woman on the Internet — MVP</title>
-  <meta name="description" content="An Elo-style head-to-head ranking of internet creators." />
+  <title>Hottest Woman on the Internet — Elo Ranker</title>
+  <meta name="description" content="Head-to-head Elo ranking of adult, consenting women creators (streamers, influencers, content creators)." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -12,24 +12,24 @@
     .card { box-shadow: 0 10px 25px rgba(0,0,0,.08); }
     .btn { transition: transform .05s ease; }
     .btn:active { transform: translateY(1px) scale(.99); }
-    .skeleton { background: linear-gradient(90deg, #eee, #f6f6f6, #eee); background-size: 200% 100%; animation: sk 1.2s linear infinite; }
-    @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-white to-zinc-50 text-zinc-900 antialiased">
   <header class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Woman on the Internet</h1>
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Girl on the Internet</h1>
     <nav class="flex items-center gap-2 text-sm">
-      <button id="addBtn" class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800">Add Creator</button>
+      <button id="unlockBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 flex items-center gap-1">
+        <span id="lockIcon">🔒</span><span id="lockLabel">Unlock Admin</span>
+      </button>
+      <button id="addBtn" class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800 hidden">Add Creator</button>
       <button id="resetBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Reset Demo</button>
     </nav>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 pb-20">
-    <!-- VS Arena -->
+    <!-- Arena -->
     <section aria-label="vote arena" class="mt-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Left -->
         <article id="cardA" class="card rounded-2xl overflow-hidden bg-white border border-zinc-200">
           <div class="aspect-[4/5] bg-zinc-100 overflow-hidden">
             <img id="imgA" alt="" class="w-full h-full object-cover" />
@@ -43,7 +43,6 @@
           </div>
         </article>
 
-        <!-- Right -->
         <article id="cardB" class="card rounded-2xl overflow-hidden bg-white border border-zinc-200">
           <div class="aspect-[4/5] bg-zinc-100 overflow-hidden">
             <img id="imgB" alt="" class="w-full h-full object-cover" />
@@ -58,11 +57,10 @@
         </article>
       </div>
 
-      <!-- VS label -->
       <div class="relative my-6">
         <div class="h-px bg-gradient-to-r from-transparent via-zinc-300 to-transparent"></div>
         <div class="absolute inset-0 flex items-center justify-center -mt-3">
-          <span class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-zinc-200 text-xs font-medium">Head-to-Head</span>
+          <span class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-zinc-200 text-xs font-medium">Head-to-Head Elo</span>
         </div>
       </div>
     </section>
@@ -71,7 +69,7 @@
     <section aria-label="leaderboard" class="mt-2">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-lg font-bold">Leaderboard</h2>
-        <div class="text-xs text-zinc-500">Click a name to view profile</div>
+        <div class="text-xs text-zinc-500">Women creators • Click a name to view profile</div>
       </div>
       <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
         <table class="w-full text-sm">
@@ -89,8 +87,9 @@
       </div>
     </section>
 
-    <footer class="mt-10 text-xs text-zinc-500">
-      <p>Demo data is stored in your browser. Replace with your own roster and add a backend for real votes. Please ensure age verification, consent to be listed, and a respectful code of conduct.</p>
+    <footer class="mt-10 text-xs text-zinc-500 leading-relaxed">
+      <p><strong>Policy:</strong> This site lists <em>adult (18+), consenting women creators</em> (streamers, influencers, content creators). Submissions must confirm age and consent. Respectful conduct only.</p>
+      <p>Demo stores data locally. For production, add a backend (auth, rate-limit, server-side Elo, takedown requests). I can set that up.</p>
     </footer>
   </main>
 
@@ -116,60 +115,103 @@
     </div>
   </div>
 
-  <!-- Add Creator Modal -->
+  <!-- Add Creator (Admin) -->
   <div id="addModal" class="fixed inset-0 hidden items-center justify-center z-50">
     <div class="absolute inset-0 bg-black/50"></div>
     <form id="addForm" class="relative bg-white w-full sm:max-w-lg rounded-2xl overflow-hidden">
       <div class="flex items-center justify-between p-4 border-b border-zinc-200">
-        <h3 class="text-lg font-bold">Add Creator</h3>
+        <h3 class="text-lg font-bold">Add Woman Creator (18+)</h3>
         <button type="button" id="closeAdd" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
       </div>
       <div class="p-4 grid grid-cols-1 gap-3">
         <input required name="name" placeholder="Display name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <input required name="image" placeholder="Image URL (square/portrait)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <input name="tags" placeholder="Tags (comma-separated)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input required name="image" placeholder="Portrait image URL (4:5 works best)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="tags" placeholder="Tags (comma-separated, e.g. streamer, influencer)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
         <textarea name="bio" placeholder="Short bio (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2"></textarea>
-        <input name="link1" placeholder="Link 1 (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <input name="link2" placeholder="Link 2 (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="x" placeholder="X (Twitter) profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="onlyfans" placeholder="OnlyFans profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <label class="text-xs text-zinc-600 flex items-center gap-2">
+          <input type="checkbox" name="adult" required class="accent-pink-600"> I confirm she is an adult (18+) and has consented to be listed.
+        </label>
         <button class="btn rounded-xl px-5 py-2.5 bg-zinc-900 text-white hover:bg-zinc-800">Add</button>
       </div>
     </form>
   </div>
 
-  <script>
-    // -------------------------
-    // Storage helpers (local demo)
-    // -------------------------
-    const STORAGE_KEY = "hwoi_creators_v1";
-    const VOTE_LOG_KEY = "hwoi_vote_log_v1";
+  <!-- Admin Unlock -->
+  <div id="unlockModal" class="fixed inset-0 hidden items-center justify-center z-50">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <form id="unlockForm" class="relative bg-white w-full sm:max-w-xs rounded-2xl overflow-hidden">
+      <div class="p-4 border-b border-zinc-200">
+        <h3 class="text-lg font-bold">Admin Password</h3>
+      </div>
+      <div class="p-4 grid gap-3">
+        <input type="password" name="pass" placeholder="Enter password" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autofocus />
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" id="cancelUnlock" class="btn rounded-xl px-3 py-2 border border-zinc-300">Cancel</button>
+          <button class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800">Unlock</button>
+        </div>
+        <p class="text-xs text-zinc-500">Demo only. Change the password constant in the code.</p>
+      </div>
+    </form>
+  </div>
 
+  <script>
+    // ===== Admin password (demo only) =====
+    // Change this to whatever you want for local testing.
+    // In production, do NOT store secrets client-side.
+    const ADMIN_PASS = "changeme";
+
+    // ===== Storage keys =====
+    const STORAGE_KEY = "hwoi_creators_v2";
+    const VOTE_LOG_KEY = "hwoi_vote_log_v2";
+    const ADMIN_FLAG = "hwoi_is_admin";
+
+    // ===== Default women creators (placeholders) =====
     const DEFAULT_CREATORS = [
       {
-        id: crypto.randomUUID(), name: "Ava Hart", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=900&auto=format&fit=crop",
-        tags: ["fitness","vlogs"], bio: "Lifestyle + fitness content.",
-        links: [{label:"Insta", url:"#"}, {label:"YouTube", url:"#"}],
+        id: crypto.randomUUID(),
+        name: "Ava Hart",
+        image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=900&auto=format&fit=crop",
+        tags: ["streamer","fitness"],
+        bio: "Lifestyle & fitness creator.",
+        x: "#",
+        onlyfans: "#",
         elo: 1200, wins: 0, losses: 0
       },
       {
-        id: crypto.randomUUID(), name: "Maya Chen", image: "https://images.unsplash.com/photo-1544005317-3f6f2b1d2b09?q=80&w=900&auto=format&fit=crop",
-        tags: ["tech","gaming"], bio: "Streams and tech reviews.",
-        links: [{label:"Twitch", url:"#"}],
+        id: crypto.randomUUID(),
+        name: "Maya Chen",
+        image: "https://images.unsplash.com/photo-1544005317-3f6f2b1d2b09?q=80&w=900&auto=format&fit=crop",
+        tags: ["tech","gaming"],
+        bio: "Gamer & tech reviewer.",
+        x: "#",
+        onlyfans: "",
         elo: 1200, wins: 0, losses: 0
       },
       {
-        id: crypto.randomUUID(), name: "Luna Rossi", image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=900&auto=format&fit=crop",
-        tags: ["fashion","travel"], bio: "Fashion & travel journals.",
-        links: [{label:"TikTok", url:"#"}],
+        id: crypto.randomUUID(),
+        name: "Luna Rossi",
+        image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=900&auto=format&fit=crop",
+        tags: ["fashion","travel"],
+        bio: "Fashion & travel vlogs.",
+        x: "#",
+        onlyfans: "#",
         elo: 1200, wins: 0, losses: 0
       },
       {
-        id: crypto.randomUUID(), name: "Noor Al-Khaled", image: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=900&auto=format&fit=crop",
-        tags: ["beauty","skincare"], bio: "Skincare science explained.",
-        links: [{label:"Blog", url:"#"}],
+        id: crypto.randomUUID(),
+        name: "Noor Al-Khaled",
+        image: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=900&auto=format&fit=crop",
+        tags: ["beauty","skincare"],
+        bio: "Skincare educator.",
+        x: "#",
+        onlyfans: "",
         elo: 1200, wins: 0, losses: 0
       }
     ];
 
+    // ===== Helpers =====
     function loadCreators() {
       const raw = localStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : DEFAULT_CREATORS;
@@ -183,36 +225,22 @@
       localStorage.setItem(VOTE_LOG_KEY, JSON.stringify(log));
     }
 
-    // -------------------------
-    // Elo utilities
-    // -------------------------
+    // Elo
     function expectedScore(rA, rB) { return 1 / (1 + Math.pow(10, (rB - rA) / 400)); }
-    function kFactor(elo) {
-      // Lower K at higher rating for stability
-      if (elo < 1200) return 40;
-      if (elo < 1600) return 32;
-      if (elo < 2000) return 24;
-      return 16;
-    }
+    function kFactor(elo) { if (elo < 1200) return 40; if (elo < 1600) return 32; if (elo < 2000) return 24; return 16; }
     function applyElo(a, b, winner) {
-      const EA = expectedScore(a.elo, b.elo);
-      const EB = expectedScore(b.elo, a.elo);
-      const KA = kFactor(a.elo);
-      const KB = kFactor(b.elo);
+      const EA = expectedScore(a.elo, b.elo), EB = expectedScore(b.elo, a.elo);
+      const KA = kFactor(a.elo), KB = kFactor(b.elo);
       if (winner === "A") {
-        a.elo = Math.round(a.elo + KA * (1 - EA));
-        b.elo = Math.round(b.elo + KB * (0 - EB));
-        a.wins++; b.losses++;
+        a.elo = Math.round(a.elo + KA * (1 - EA)); a.wins++;
+        b.elo = Math.round(b.elo + KB * (0 - EB)); b.losses++;
       } else {
-        a.elo = Math.round(a.elo + KA * (0 - EA));
-        b.elo = Math.round(b.elo + KB * (1 - EB));
-        a.losses++; b.wins++;
+        a.elo = Math.round(a.elo + KA * (0 - EA)); a.losses++;
+        b.elo = Math.round(b.elo + KB * (1 - EB)); b.wins++;
       }
     }
 
-    // -------------------------
-    // UI state
-    // -------------------------
+    // ===== UI state =====
     let creators = loadCreators();
     let currentPair = [];
 
@@ -228,6 +256,9 @@
       board: document.getElementById("board"),
       resetBtn: document.getElementById("resetBtn"),
       addBtn: document.getElementById("addBtn"),
+      unlockBtn: document.getElementById("unlockBtn"),
+      lockIcon: document.getElementById("lockIcon"),
+      lockLabel: document.getElementById("lockLabel"),
       // profile modal
       profileModal: document.getElementById("profileModal"),
       profileName: document.getElementById("profileName"),
@@ -241,8 +272,13 @@
       addModal: document.getElementById("addModal"),
       addForm: document.getElementById("addForm"),
       closeAdd: document.getElementById("closeAdd"),
+      // unlock modal
+      unlockModal: document.getElementById("unlockModal"),
+      unlockForm: document.getElementById("unlockForm"),
+      cancelUnlock: document.getElementById("cancelUnlock"),
     };
 
+    // Pick two distinct creators
     function pickTwo() {
       if (creators.length < 2) return [];
       let i = Math.floor(Math.random() * creators.length);
@@ -267,9 +303,7 @@
       els.board.innerHTML = sorted.map((c,idx)=>`
         <tr class="${idx % 2 ? 'bg-white' : 'bg-zinc-50/60'}">
           <td class="p-3">${idx+1}</td>
-          <td class="p-3">
-            <a href="#profile-${c.id}" class="font-medium hover:underline">${c.name}</a>
-          </td>
+          <td class="p-3"><a href="#profile-${c.id}" class="font-medium hover:underline">${c.name}</a></td>
           <td class="p-3 text-zinc-500">${(c.tags||[]).join(", ")}</td>
           <td class="p-3 text-right font-semibold">${c.elo}</td>
           <td class="p-3 text-right">${c.wins}-${c.losses}</td>
@@ -285,57 +319,98 @@
       els.profileBio.textContent = c.bio || "—";
       els.profileTags.textContent = (c.tags||[]).join(", ") || "—";
       els.profileStats.textContent = `Elo ${c.elo} • ${c.wins}-${c.losses}`;
-      els.profileLinks.innerHTML = (c.links||[]).map(l=>`
+      const links = [];
+      if (c.x) links.push({label:"X", url:c.x});
+      if (c.onlyfans) links.push({label:"OnlyFans", url:c.onlyfans});
+      els.profileLinks.innerHTML = links.map(l=>`
         <a href="${l.url}" target="_blank" rel="noopener" class="px-2 py-1 rounded-lg border border-zinc-300 hover:bg-zinc-50 text-xs">${l.label}</a>
       `).join("");
       els.profileModal.classList.remove("hidden");
       els.profileModal.classList.add("flex");
     }
 
-    // vote handlers
+    // Voting
     els.voteA.addEventListener("click", ()=> {
       if (currentPair.length<2) return;
       const [A,B] = currentPair;
-      applyElo(A,B,"A");
-      saveCreators(creators);
-      logVote(A.id, B.id, A.id);
+      applyElo(A,B,"A"); saveCreators(creators); logVote(A.id,B.id,A.id);
       renderBoard(); renderArena();
     });
     els.voteB.addEventListener("click", ()=> {
       if (currentPair.length<2) return;
       const [A,B] = currentPair;
-      applyElo(A,B,"B");
-      saveCreators(creators);
-      logVote(A.id, B.id, B.id);
+      applyElo(A,B,"B"); saveCreators(creators); logVote(A.id,B.id,B.id);
       renderBoard(); renderArena();
     });
 
     // Profile deep links
     window.addEventListener("hashchange", ()=>{
-      const h = location.hash;
-      const m = h.match(/^#profile-(.+)$/);
+      const m = location.hash.match(/^#profile-(.+)$/);
       if (m) openProfile(m[1]);
     });
-
-    // Click names in arena open profile
-    document.getElementById("nameA").addEventListener("click",(e)=> {
-      e.preventDefault(); openProfile(currentPair[0].id);
-    });
-    document.getElementById("nameB").addEventListener("click",(e)=> {
-      e.preventDefault(); openProfile(currentPair[1].id);
-    });
+    document.getElementById("nameA").addEventListener("click",(e)=>{ e.preventDefault(); openProfile(currentPair[0].id); });
+    document.getElementById("nameB").addEventListener("click",(e)=>{ e.preventDefault(); openProfile(currentPair[1].id); });
 
     // Close modals
     els.closeModal.addEventListener("click", ()=> {
       els.profileModal.classList.add("hidden");
       els.profileModal.classList.remove("flex");
     });
-    els.profileModal.addEventListener("click", (e)=> {
-      if (e.target === els.profileModal) els.closeModal.click();
+    els.profileModal.addEventListener("click", (e)=> { if (e.target === els.profileModal) els.closeModal.click(); });
+
+    // ===== Admin gating =====
+    function updateAdminUI() {
+      const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
+      els.addBtn.classList.toggle("hidden", !isAdmin);
+      els.lockIcon.textContent = isAdmin ? "🔓" : "🔒";
+      els.lockLabel.textContent = isAdmin ? "Admin Unlocked" : "Unlock Admin";
+    }
+
+    els.unlockBtn.addEventListener("click", ()=>{
+      const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
+      if (isAdmin) {
+        // lock again
+        if (confirm("Lock admin?")) {
+          sessionStorage.removeItem(ADMIN_FLAG);
+          updateAdminUI();
+        }
+      } else {
+        els.unlockModal.classList.remove("hidden");
+        els.unlockModal.classList.add("flex");
+        // focus input
+        setTimeout(()=> {
+          const inp = els.unlockForm.querySelector('input[name="pass"]');
+          if (inp) inp.focus();
+        }, 50);
+      }
     });
 
-    // Add creator modal
+    els.cancelUnlock.addEventListener("click", ()=>{
+      els.unlockModal.classList.add("hidden");
+      els.unlockModal.classList.remove("flex");
+      els.unlockForm.reset();
+    });
+
+    els.unlockModal.addEventListener("click", (e)=> {
+      if (e.target === els.unlockModal) els.cancelUnlock.click();
+    });
+
+    els.unlockForm.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const fd = new FormData(els.unlockForm);
+      const pass = (fd.get("pass")||"").toString();
+      if (pass === ADMIN_PASS) {
+        sessionStorage.setItem(ADMIN_FLAG, "1");
+        updateAdminUI();
+        els.cancelUnlock.click();
+      } else {
+        alert("Incorrect password.");
+      }
+    });
+
+    // Add creator (admin only)
     document.getElementById("addBtn").addEventListener("click", ()=>{
+      if (sessionStorage.getItem(ADMIN_FLAG) !== "1") return alert("Admin locked.");
       els.addModal.classList.remove("hidden");
       els.addModal.classList.add("flex");
     });
@@ -343,27 +418,30 @@
       els.addModal.classList.add("hidden");
       els.addModal.classList.remove("flex");
     });
-    els.addModal.addEventListener("click", (e)=> {
-      if (e.target === els.addModal) els.closeAdd.click();
-    });
+    els.addModal.addEventListener("click", (e)=> { if (e.target === els.addModal) els.closeAdd.click(); });
+
     els.addForm.addEventListener("submit", (e)=>{
       e.preventDefault();
+      if (sessionStorage.getItem(ADMIN_FLAG) !== "1") return alert("Admin locked.");
       const fd = new FormData(els.addForm);
+      const isAdult = !!fd.get("adult");
+      if (!isAdult) return alert("Adult & consent confirmation is required.");
+
       const creator = {
         id: crypto.randomUUID(),
         name: (fd.get("name")||"").toString().trim(),
         image: (fd.get("image")||"").toString().trim(),
         tags: (fd.get("tags")||"").toString().split(",").map(s=>s.trim()).filter(Boolean),
         bio: (fd.get("bio")||"").toString().trim(),
-        links: [fd.get("link1"), fd.get("link2")].filter(Boolean).map((url,i)=>({label:`Link ${i+1}`, url})),
+        x: (fd.get("x")||"").toString().trim(),
+        onlyfans: (fd.get("onlyfans")||"").toString().trim(),
         elo: 1200, wins: 0, losses: 0
       };
-      if (!creator.name || !creator.image) return;
+      if (!creator.name || !creator.image) return alert("Name and image are required.");
       creators.push(creator);
       saveCreators(creators);
       renderBoard(); renderArena();
-      els.closeAdd.click();
-      els.addForm.reset();
+      els.closeAdd.click(); els.addForm.reset();
     });
 
     // Reset
@@ -377,8 +455,8 @@
     });
 
     // Init
+    updateAdminUI();
     renderBoard(); renderArena();
-    // Open profile if linked directly
     const m = location.hash.match(/^#profile-(.+)$/);
     if (m) openProfile(m[1]);
   </script>
