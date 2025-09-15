@@ -12,22 +12,21 @@
     .card { box-shadow: 0 10px 25px rgba(0,0,0,.08); }
     .btn { transition: transform .05s ease; }
     .btn:active { transform: translateY(1px) scale(.99); }
-    .field { @apply w-full rounded-xl border border-zinc-300 px-3 py-2; }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-white to-zinc-50 text-zinc-900 antialiased">
   <header class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
     <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Woman on the Internet</h1>
     <nav class="flex flex-wrap items-center gap-2 text-sm">
-      <button id="unlockBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 flex items-center gap-1">
+      <button id="unlockBtn" type="button" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 flex items-center gap-1">
         <span id="lockIcon">🔒</span><span id="lockLabel">Unlock Admin</span>
       </button>
-      <button id="addBtn" class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800 hidden">Add Creator</button>
-      <button id="exportBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Export JSON</button>
+      <button id="addBtn" type="button" class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800 hidden">Add Creator</button>
+      <button id="exportBtn" type="button" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Export JSON</button>
       <label class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 cursor-pointer">
         Import JSON <input id="importInput" type="file" accept="application/json" class="hidden" />
       </label>
-      <button id="resetBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Reset Demo</button>
+      <button id="resetBtn" type="button" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Reset Demo</button>
     </nav>
   </header>
 
@@ -44,7 +43,7 @@
               <a id="nameA" href="#" class="text-lg font-semibold hover:underline"></a>
               <p id="tagA" class="text-xs text-zinc-500"></p>
             </div>
-            <button id="voteA" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400">Vote</button>
+            <button id="voteA" type="button" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400">Vote</button>
           </div>
         </article>
 
@@ -57,7 +56,7 @@
               <a id="nameB" href="#" class="text-lg font-semibold hover:underline"></a>
               <p id="tagB" class="text-xs text-zinc-500"></p>
             </div>
-            <button id="voteB" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400">Vote</button>
+            <button id="voteB" type="button" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400">Vote</button>
           </div>
         </article>
       </div>
@@ -94,22 +93,23 @@
 
     <footer class="mt-10 text-xs text-zinc-500 leading-relaxed">
       <p><strong>Policy:</strong> This site lists <em>adult (18+), consenting women creators</em> (streamers, influencers, content creators). Submissions must confirm age and consent. Respectful conduct only.</p>
-      <p>Demo stores data locally. For production, add a backend (auth, rate-limit, server-side Elo, takedown requests). I can set that up.</p>
+      <p>Demo stores data locally. For production, use the Next.js + Supabase setup below.</p>
     </footer>
   </main>
 
   <!-- Profile Modal -->
   <div id="profileModal" class="fixed inset-0 hidden items-end sm:items-center justify-center z-50">
     <div class="absolute inset-0 bg-black/50"></div>
-    <div class="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden">
+    <!-- Stop clicks from bubbling to overlay -->
+    <div id="profilePanel" class="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl overflow-hidden">
       <div class="flex items-center justify-between p-4 border-b border-zinc-200">
         <h3 id="profileName" class="text-lg font-bold"></h3>
         <div class="flex items-center gap-2">
-          <button id="editBtn" class="btn hidden px-2 py-1 rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
-          <button id="saveBtn" class="btn hidden px-2 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Save</button>
-          <button id="cancelBtn" class="btn hidden px-2 py-1 rounded-lg border border-zinc-300">Cancel</button>
-          <button id="deleteBtn" class="btn hidden px-2 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Delete</button>
-          <button id="closeModal" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
+          <button id="editBtn" type="button" class="btn hidden px-2 py-1 rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
+          <button id="saveBtn" type="button" class="btn hidden px-2 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Save</button>
+          <button id="cancelBtn" type="button" class="btn hidden px-2 py-1 rounded-lg border border-zinc-300">Cancel</button>
+          <button id="deleteBtn" type="button" class="btn hidden px-2 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Delete</button>
+          <button id="closeModal" type="button" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
         </div>
       </div>
 
@@ -127,33 +127,33 @@
       </div>
 
       <!-- Edit Mode -->
-      <form id="profileEdit" class="hidden p-4 grid gap-3">
+      <form id="profileEdit" class="hidden p-4 grid gap-3" autocomplete="off">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="space-y-2">
             <label class="text-xs text-zinc-600">Display name</label>
-            <input name="name" class="field" />
+            <input name="name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
           </div>
           <div class="space-y-2">
             <label class="text-xs text-zinc-600">Image URL (portrait works best)</label>
-            <input name="image" class="field" />
+            <input name="image" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
           </div>
         </div>
         <div class="space-y-2">
           <label class="text-xs text-zinc-600">Tags (comma-separated)</label>
-          <input name="tags" class="field" />
+          <input name="tags" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
         </div>
         <div class="space-y-2">
           <label class="text-xs text-zinc-600">Bio</label>
-          <textarea name="bio" rows="3" class="field"></textarea>
+          <textarea name="bio" rows="3" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off"></textarea>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div class="space-y-2">
             <label class="text-xs text-zinc-600">X (Twitter) URL</label>
-            <input name="x" class="field" />
+            <input name="x" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
           </div>
           <div class="space-y-2">
             <label class="text-xs text-zinc-600">OnlyFans URL</label>
-            <input name="onlyfans" class="field" />
+            <input name="onlyfans" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autocomplete="off" />
           </div>
         </div>
         <div class="space-y-2">
@@ -167,18 +167,18 @@
   <!-- Add Creator (Admin) -->
   <div id="addModal" class="fixed inset-0 hidden items-center justify-center z-50">
     <div class="absolute inset-0 bg-black/50"></div>
-    <form id="addForm" class="relative bg-white w-full sm:max-w-lg rounded-2xl overflow-hidden">
+    <form id="addForm" class="relative bg-white w-full sm:max-w-lg rounded-2xl overflow-hidden" autocomplete="off">
       <div class="flex items-center justify-between p-4 border-b border-zinc-200">
         <h3 class="text-lg font-bold">Add Woman Creator (18+)</h3>
         <button type="button" id="closeAdd" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
       </div>
       <div class="p-4 grid grid-cols-1 gap-3">
-        <input required name="name" placeholder="Display name" class="field" />
-        <input required name="image" placeholder="Portrait image URL (4:5 works best)" class="field" />
-        <input name="tags" placeholder="Tags (comma-separated, e.g. streamer, influencer)" class="field" />
-        <textarea name="bio" placeholder="Short bio (optional)" class="field"></textarea>
-        <input name="x" placeholder="X (Twitter) profile URL (optional)" class="field" />
-        <input name="onlyfans" placeholder="OnlyFans profile URL (optional)" class="field" />
+        <input required name="name" placeholder="Display name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input required name="image" placeholder="Portrait image URL (4:5 works best)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="tags" placeholder="Tags (comma-separated, e.g. streamer, influencer)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <textarea name="bio" placeholder="Short bio (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2"></textarea>
+        <input name="x" placeholder="X (Twitter) profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="onlyfans" placeholder="OnlyFans profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
         <label class="text-xs text-zinc-600 flex items-center gap-2">
           <input type="checkbox" name="adult" required class="accent-pink-600"> I confirm she is an adult (18+) and has consented to be listed.
         </label>
@@ -195,7 +195,7 @@
         <h3 class="text-lg font-bold">Admin Password</h3>
       </div>
       <div class="p-4 grid gap-3">
-        <input type="password" name="pass" placeholder="Enter password" class="field" autofocus />
+        <input type="password" name="pass" placeholder="Enter password" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autofocus />
         <div class="flex items-center justify-end gap-2">
           <button type="button" id="cancelUnlock" class="btn rounded-xl px-3 py-2 border border-zinc-300">Cancel</button>
           <button class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800">Unlock</button>
@@ -210,8 +210,8 @@
     const ADMIN_PASS = "changeme";
 
     // ===== Storage keys =====
-    const STORAGE_KEY = "hwoi_creators_v4"; // bumped version
-    const VOTE_LOG_KEY = "hwoi_vote_log_v4";
+    const STORAGE_KEY = "hwoi_creators_v5"; // bumped version
+    const VOTE_LOG_KEY = "hwoi_vote_log_v5";
     const ADMIN_FLAG = "hwoi_is_admin";
 
     // ===== Default women creators (placeholders) =====
@@ -308,8 +308,8 @@
       unlockBtn: document.getElementById("unlockBtn"),
       lockIcon: document.getElementById("lockIcon"),
       lockLabel: document.getElementById("lockLabel"),
-      // profile modal view
       profileModal: document.getElementById("profileModal"),
+      profilePanel: document.getElementById("profilePanel"),
       profileName: document.getElementById("profileName"),
       profileImg: document.getElementById("profileImg"),
       profileBio: document.getElementById("profileBio"),
@@ -317,24 +317,23 @@
       profileStats: document.getElementById("profileStats"),
       profileLinks: document.getElementById("profileLinks"),
       profileView: document.getElementById("profileView"),
-      // edit controls
       editBtn: document.getElementById("editBtn"),
       saveBtn: document.getElementById("saveBtn"),
       cancelBtn: document.getElementById("cancelBtn"),
       deleteBtn: document.getElementById("deleteBtn"),
       closeModal: document.getElementById("closeModal"),
-      // edit form
       profileEdit: document.getElementById("profileEdit"),
       editPreview: document.getElementById("editPreview"),
-      // add modal
       addModal: document.getElementById("addModal"),
       addForm: document.getElementById("addForm"),
       closeAdd: document.getElementById("closeAdd"),
-      // unlock modal
       unlockModal: document.getElementById("unlockModal"),
       unlockForm: document.getElementById("unlockForm"),
       cancelUnlock: document.getElementById("cancelUnlock"),
     };
+
+    // Don’t let clicks inside the panel close the modal
+    els.profilePanel.addEventListener("click", (e)=> e.stopPropagation());
 
     // Pick two distinct creators
     function pickTwo() {
@@ -415,11 +414,8 @@
       if (!c) return;
       openProfileId = id;
       populateView(c);
-
-      // admin buttons
       els.editBtn.classList.toggle("hidden", !isAdmin());
       els.deleteBtn.classList.toggle("hidden", !isAdmin());
-
       toggleEdit(false);
       els.profileModal.classList.remove("hidden");
       els.profileModal.classList.add("flex");
@@ -447,14 +443,16 @@
     document.getElementById("nameA").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[0]) openProfile(currentPair[0].id); });
     document.getElementById("nameB").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[1]) openProfile(currentPair[1].id); });
 
-    // Close modal
+    // Close modals (overlay only)
+    els.profileModal.addEventListener("click", (e)=> {
+      if (e.target === els.profileModal) els.closeModal.click();
+    });
     els.closeModal.addEventListener("click", ()=> {
       els.profileModal.classList.add("hidden");
       els.profileModal.classList.remove("flex");
       openProfileId = null;
       toggleEdit(false);
     });
-    els.profileModal.addEventListener("click", (e)=> { if (e.target === els.profileModal) els.closeModal.click(); });
 
     // ===== Delete creator (admin only) =====
     els.deleteBtn.addEventListener("click", ()=>{
@@ -487,16 +485,18 @@
       els.editPreview.src = els.profileEdit.image.value.trim();
     });
 
-    els.cancelBtn.addEventListener("click", ()=>{
-      toggleEdit(false);
-      if (openProfileId) populateView(creators.find(x=>x.id===openProfileId) || {});
+    // prevent enter-key form submit closing modal; also allow Ctrl/Cmd+Enter to save
+    els.profileEdit.addEventListener("submit", (e)=> {
+      e.preventDefault();
+      doSave();
+    });
+    els.profileEdit.addEventListener("keydown", (e)=> {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); doSave(); }
     });
 
-    els.saveBtn.addEventListener("click", (e)=>{
-      e.preventDefault();
+    function doSave(){
       if (!isAdmin()) return alert("Admin locked.");
       if (!openProfileId) return;
-
       const f = els.profileEdit;
       const updated = {
         name: f.name.value.trim(),
@@ -507,17 +507,20 @@
         onlyfans: f.onlyfans.value.trim(),
       };
       if (!updated.name || !updated.image) return alert("Name and image are required.");
-
       const idx = creators.findIndex(x=>x.id===openProfileId);
       if (idx === -1) return;
-
-      // keep Elo and W-L; only update profile fields
       creators[idx] = { ...creators[idx], ...updated };
       saveCreators(creators);
       populateView(creators[idx]);
-      renderBoard(); // update leaderboard name/tags immediately
+      renderBoard();
       toggleEdit(false);
       alert("Profile updated.");
+    }
+
+    els.saveBtn.addEventListener("click", (e)=> { e.preventDefault(); doSave(); });
+    els.cancelBtn.addEventListener("click", ()=> {
+      toggleEdit(false);
+      if (openProfileId) populateView(creators.find(x=>x.id===openProfileId) || {});
     });
 
     // ===== Admin gating =====
@@ -526,7 +529,6 @@
       els.addBtn.classList.toggle("hidden", !admin);
       els.lockIcon.textContent = admin ? "🔓" : "🔒";
       els.lockLabel.textContent = admin ? "Admin Unlocked" : "Unlock Admin";
-      // reflect in profile modal (if open)
       if (openProfileId !== null) {
         els.editBtn.classList.toggle("hidden", !admin);
         els.deleteBtn.classList.toggle("hidden", !admin || editMode);
@@ -550,16 +552,12 @@
       }
     });
 
-    els.cancelUnlock.addEventListener("click", ()=>{
+    document.getElementById("cancelUnlock").addEventListener("click", ()=>{
       els.unlockModal.classList.add("hidden");
       els.unlockModal.classList.remove("flex");
       els.unlockForm.reset();
     });
-
-    els.unlockModal.addEventListener("click", (e)=> {
-      if (e.target === els.unlockModal) els.cancelUnlock.click();
-    });
-
+    els.unlockModal.addEventListener("click", (e)=> { if (e.target === els.unlockModal) document.getElementById("cancelUnlock").click(); });
     els.unlockForm.addEventListener("submit", (e)=>{
       e.preventDefault();
       const fd = new FormData(els.unlockForm);
@@ -567,7 +565,7 @@
       if (pass === ADMIN_PASS) {
         sessionStorage.setItem(ADMIN_FLAG, "1");
         updateAdminUI();
-        els.cancelUnlock.click();
+        document.getElementById("cancelUnlock").click();
       } else {
         alert("Incorrect password.");
       }
@@ -591,7 +589,6 @@
       const fd = new FormData(els.addForm);
       const isAdult = !!fd.get("adult");
       if (!isAdult) return alert("Adult & consent confirmation is required.");
-
       const creator = {
         id: crypto.randomUUID(),
         name: (fd.get("name")||"").toString().trim(),
