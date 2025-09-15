@@ -12,12 +12,13 @@
     .card { box-shadow: 0 10px 25px rgba(0,0,0,.08); }
     .btn { transition: transform .05s ease; }
     .btn:active { transform: translateY(1px) scale(.99); }
+    .field { @apply w-full rounded-xl border border-zinc-300 px-3 py-2; }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-b from-white to-zinc-50 text-zinc-900 antialiased">
   <header class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
     <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Woman on the Internet</h1>
-    <nav class="flex items-center gap-2 text-sm">
+    <nav class="flex flex-wrap items-center gap-2 text-sm">
       <button id="unlockBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 flex items-center gap-1">
         <span id="lockIcon">🔒</span><span id="lockLabel">Unlock Admin</span>
       </button>
@@ -104,11 +105,16 @@
       <div class="flex items-center justify-between p-4 border-b border-zinc-200">
         <h3 id="profileName" class="text-lg font-bold"></h3>
         <div class="flex items-center gap-2">
+          <button id="editBtn" class="btn hidden px-2 py-1 rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
+          <button id="saveBtn" class="btn hidden px-2 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Save</button>
+          <button id="cancelBtn" class="btn hidden px-2 py-1 rounded-lg border border-zinc-300">Cancel</button>
           <button id="deleteBtn" class="btn hidden px-2 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Delete</button>
           <button id="closeModal" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-0">
+
+      <!-- View Mode -->
+      <div id="profileView" class="grid grid-cols-2 gap-0">
         <div class="col-span-2 sm:col-span-1">
           <img id="profileImg" alt="" class="w-full h-full object-cover" />
         </div>
@@ -119,6 +125,42 @@
           <div id="profileLinks" class="flex flex-wrap gap-2 pt-1"></div>
         </div>
       </div>
+
+      <!-- Edit Mode -->
+      <form id="profileEdit" class="hidden p-4 grid gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-2">
+            <label class="text-xs text-zinc-600">Display name</label>
+            <input name="name" class="field" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs text-zinc-600">Image URL (portrait works best)</label>
+            <input name="image" class="field" />
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs text-zinc-600">Tags (comma-separated)</label>
+          <input name="tags" class="field" />
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs text-zinc-600">Bio</label>
+          <textarea name="bio" rows="3" class="field"></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="space-y-2">
+            <label class="text-xs text-zinc-600">X (Twitter) URL</label>
+            <input name="x" class="field" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-xs text-zinc-600">OnlyFans URL</label>
+            <input name="onlyfans" class="field" />
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs text-zinc-600">Live preview</label>
+          <img id="editPreview" class="w-full aspect-[4/5] object-cover rounded-xl border border-zinc-200" alt="Preview" />
+        </div>
+      </form>
     </div>
   </div>
 
@@ -131,12 +173,12 @@
         <button type="button" id="closeAdd" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
       </div>
       <div class="p-4 grid grid-cols-1 gap-3">
-        <input required name="name" placeholder="Display name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <input required name="image" placeholder="Portrait image URL (4:5 works best)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <input name="tags" placeholder="Tags (comma-separated, e.g. streamer, influencer)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <textarea name="bio" placeholder="Short bio (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2"></textarea>
-        <input name="x" placeholder="X (Twitter) profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
-        <input name="onlyfans" placeholder="OnlyFans profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input required name="name" placeholder="Display name" class="field" />
+        <input required name="image" placeholder="Portrait image URL (4:5 works best)" class="field" />
+        <input name="tags" placeholder="Tags (comma-separated, e.g. streamer, influencer)" class="field" />
+        <textarea name="bio" placeholder="Short bio (optional)" class="field"></textarea>
+        <input name="x" placeholder="X (Twitter) profile URL (optional)" class="field" />
+        <input name="onlyfans" placeholder="OnlyFans profile URL (optional)" class="field" />
         <label class="text-xs text-zinc-600 flex items-center gap-2">
           <input type="checkbox" name="adult" required class="accent-pink-600"> I confirm she is an adult (18+) and has consented to be listed.
         </label>
@@ -153,7 +195,7 @@
         <h3 class="text-lg font-bold">Admin Password</h3>
       </div>
       <div class="p-4 grid gap-3">
-        <input type="password" name="pass" placeholder="Enter password" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autofocus />
+        <input type="password" name="pass" placeholder="Enter password" class="field" autofocus />
         <div class="flex items-center justify-end gap-2">
           <button type="button" id="cancelUnlock" class="btn rounded-xl px-3 py-2 border border-zinc-300">Cancel</button>
           <button class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800">Unlock</button>
@@ -168,8 +210,8 @@
     const ADMIN_PASS = "changeme";
 
     // ===== Storage keys =====
-    const STORAGE_KEY = "hwoi_creators_v3"; // bumped version
-    const VOTE_LOG_KEY = "hwoi_vote_log_v3";
+    const STORAGE_KEY = "hwoi_creators_v4"; // bumped version
+    const VOTE_LOG_KEY = "hwoi_vote_log_v4";
     const ADMIN_FLAG = "hwoi_is_admin";
 
     // ===== Default women creators (placeholders) =====
@@ -208,11 +250,7 @@
 
     // Export/Import
     function exportCreators() {
-      const data = {
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        creators
-      };
+      const data = { version: 1, exportedAt: new Date().toISOString(), creators };
       const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -224,7 +262,7 @@
       try {
         const text = await file.text();
         const json = JSON.parse(text);
-        const list = Array.isArray(json) ? json : json.creators; // allow raw array or wrapped
+        const list = Array.isArray(json) ? json : json.creators;
         if (!Array.isArray(list)) throw new Error("Invalid JSON format");
         const cleaned = list.filter(assertCreatorShape);
         if (cleaned.length === 0) throw new Error("No valid creators found.");
@@ -251,6 +289,7 @@
     let creators = loadCreators();
     let currentPair = [];
     let openProfileId = null;
+    let editMode = false;
 
     const els = {
       imgA: document.getElementById("imgA"),
@@ -269,7 +308,7 @@
       unlockBtn: document.getElementById("unlockBtn"),
       lockIcon: document.getElementById("lockIcon"),
       lockLabel: document.getElementById("lockLabel"),
-      // profile modal
+      // profile modal view
       profileModal: document.getElementById("profileModal"),
       profileName: document.getElementById("profileName"),
       profileImg: document.getElementById("profileImg"),
@@ -277,8 +316,16 @@
       profileTags: document.getElementById("profileTags"),
       profileStats: document.getElementById("profileStats"),
       profileLinks: document.getElementById("profileLinks"),
-      closeModal: document.getElementById("closeModal"),
+      profileView: document.getElementById("profileView"),
+      // edit controls
+      editBtn: document.getElementById("editBtn"),
+      saveBtn: document.getElementById("saveBtn"),
+      cancelBtn: document.getElementById("cancelBtn"),
       deleteBtn: document.getElementById("deleteBtn"),
+      closeModal: document.getElementById("closeModal"),
+      // edit form
+      profileEdit: document.getElementById("profileEdit"),
+      editPreview: document.getElementById("editPreview"),
       // add modal
       addModal: document.getElementById("addModal"),
       addForm: document.getElementById("addForm"),
@@ -301,7 +348,6 @@
     function renderArena() {
       currentPair = pickTwo();
       if (currentPair.length < 2) {
-        // Clear arena if not enough creators
         els.imgA.src = ""; els.imgB.src = "";
         els.nameA.textContent = "Add more creators"; els.nameB.textContent = "";
         els.tagA.textContent = ""; els.tagB.textContent = "";
@@ -329,10 +375,7 @@
       `).join("");
     }
 
-    function openProfile(id) {
-      const c = creators.find(x=>x.id===id);
-      if (!c) return;
-      openProfileId = id;
+    function populateView(c) {
       els.profileName.textContent = c.name;
       els.profileImg.src = c.image; els.profileImg.alt = c.name;
       els.profileBio.textContent = c.bio || "—";
@@ -344,11 +387,40 @@
       els.profileLinks.innerHTML = links.map(l=>`
         <a href="${l.url}" target="_blank" rel="noopener" class="px-2 py-1 rounded-lg border border-zinc-300 hover:bg-zinc-50 text-xs">${l.label}</a>
       `).join("");
+    }
 
-      // admin-only delete button
-      const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
-      els.deleteBtn.classList.toggle("hidden", !isAdmin);
+    function populateEdit(c) {
+      const f = els.profileEdit;
+      f.name.value = c.name || "";
+      f.image.value = c.image || "";
+      f.tags.value = (c.tags||[]).join(", ");
+      f.bio.value = c.bio || "";
+      f.x.value = c.x || "";
+      f.onlyfans.value = c.onlyfans || "";
+      els.editPreview.src = c.image || "";
+    }
 
+    function toggleEdit(on) {
+      editMode = !!on;
+      els.profileView.classList.toggle("hidden", editMode);
+      els.profileEdit.classList.toggle("hidden", !editMode);
+      els.editBtn.classList.toggle("hidden", !isAdmin());
+      els.saveBtn.classList.toggle("hidden", !editMode);
+      els.cancelBtn.classList.toggle("hidden", !editMode);
+      els.deleteBtn.classList.toggle("hidden", editMode || !isAdmin());
+    }
+
+    function openProfile(id) {
+      const c = creators.find(x=>x.id===id);
+      if (!c) return;
+      openProfileId = id;
+      populateView(c);
+
+      // admin buttons
+      els.editBtn.classList.toggle("hidden", !isAdmin());
+      els.deleteBtn.classList.toggle("hidden", !isAdmin());
+
+      toggleEdit(false);
       els.profileModal.classList.remove("hidden");
       els.profileModal.classList.add("flex");
     }
@@ -375,17 +447,18 @@
     document.getElementById("nameA").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[0]) openProfile(currentPair[0].id); });
     document.getElementById("nameB").addEventListener("click",(e)=>{ e.preventDefault(); if(currentPair[1]) openProfile(currentPair[1].id); });
 
-    // Close modals
+    // Close modal
     els.closeModal.addEventListener("click", ()=> {
       els.profileModal.classList.add("hidden");
       els.profileModal.classList.remove("flex");
       openProfileId = null;
+      toggleEdit(false);
     });
     els.profileModal.addEventListener("click", (e)=> { if (e.target === els.profileModal) els.closeModal.click(); });
 
     // ===== Delete creator (admin only) =====
     els.deleteBtn.addEventListener("click", ()=>{
-      if (sessionStorage.getItem(ADMIN_FLAG) !== "1") return alert("Admin locked.");
+      if (!isAdmin()) return alert("Admin locked.");
       if (!openProfileId) return;
       const c = creators.find(x=>x.id===openProfileId);
       if (!c) return;
@@ -397,20 +470,72 @@
       alert("Creator deleted.");
     });
 
+    // ===== Edit flow (admin only) =====
+    function isAdmin(){ return sessionStorage.getItem(ADMIN_FLAG) === "1"; }
+
+    els.editBtn.addEventListener("click", ()=>{
+      if (!isAdmin()) return alert("Admin locked.");
+      if (!openProfileId) return;
+      const c = creators.find(x=>x.id===openProfileId);
+      if (!c) return;
+      populateEdit(c);
+      toggleEdit(true);
+    });
+
+    // live preview while editing
+    els.profileEdit.image.addEventListener("input", ()=>{
+      els.editPreview.src = els.profileEdit.image.value.trim();
+    });
+
+    els.cancelBtn.addEventListener("click", ()=>{
+      toggleEdit(false);
+      if (openProfileId) populateView(creators.find(x=>x.id===openProfileId) || {});
+    });
+
+    els.saveBtn.addEventListener("click", (e)=>{
+      e.preventDefault();
+      if (!isAdmin()) return alert("Admin locked.");
+      if (!openProfileId) return;
+
+      const f = els.profileEdit;
+      const updated = {
+        name: f.name.value.trim(),
+        image: f.image.value.trim(),
+        tags: f.tags.value.split(",").map(s=>s.trim()).filter(Boolean),
+        bio: f.bio.value.trim(),
+        x: f.x.value.trim(),
+        onlyfans: f.onlyfans.value.trim(),
+      };
+      if (!updated.name || !updated.image) return alert("Name and image are required.");
+
+      const idx = creators.findIndex(x=>x.id===openProfileId);
+      if (idx === -1) return;
+
+      // keep Elo and W-L; only update profile fields
+      creators[idx] = { ...creators[idx], ...updated };
+      saveCreators(creators);
+      populateView(creators[idx]);
+      renderBoard(); // update leaderboard name/tags immediately
+      toggleEdit(false);
+      alert("Profile updated.");
+    });
+
     // ===== Admin gating =====
-    const elsUnlock = { unlockBtn: document.getElementById("unlockBtn") };
     function updateAdminUI() {
-      const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
-      els.addBtn.classList.toggle("hidden", !isAdmin);
-      els.lockIcon.textContent = isAdmin ? "🔓" : "🔒";
-      els.lockLabel.textContent = isAdmin ? "Admin Unlocked" : "Unlock Admin";
+      const admin = isAdmin();
+      els.addBtn.classList.toggle("hidden", !admin);
+      els.lockIcon.textContent = admin ? "🔓" : "🔒";
+      els.lockLabel.textContent = admin ? "Admin Unlocked" : "Unlock Admin";
       // reflect in profile modal (if open)
-      if (openProfileId !== null) els.deleteBtn.classList.toggle("hidden", !isAdmin);
+      if (openProfileId !== null) {
+        els.editBtn.classList.toggle("hidden", !admin);
+        els.deleteBtn.classList.toggle("hidden", !admin || editMode);
+      }
     }
 
     els.unlockBtn.addEventListener("click", ()=>{
-      const isAdmin = sessionStorage.getItem(ADMIN_FLAG) === "1";
-      if (isAdmin) {
+      const admin = isAdmin();
+      if (admin) {
         if (confirm("Lock admin?")) {
           sessionStorage.removeItem(ADMIN_FLAG);
           updateAdminUI();
@@ -448,9 +573,9 @@
       }
     });
 
-    // Add creator (admin only)
+    // ===== Add creator (admin only) =====
     document.getElementById("addBtn").addEventListener("click", ()=>{
-      if (sessionStorage.getItem(ADMIN_FLAG) !== "1") return alert("Admin locked.");
+      if (!isAdmin()) return alert("Admin locked.");
       els.addModal.classList.remove("hidden");
       els.addModal.classList.add("flex");
     });
@@ -462,7 +587,7 @@
 
     els.addForm.addEventListener("submit", (e)=>{
       e.preventDefault();
-      if (sessionStorage.getItem(ADMIN_FLAG) !== "1") return alert("Admin locked.");
+      if (!isAdmin()) return alert("Admin locked.");
       const fd = new FormData(els.addForm);
       const isAdult = !!fd.get("adult");
       if (!isAdult) return alert("Adult & consent confirmation is required.");
