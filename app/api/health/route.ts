@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
-export const runtime = "nodejs";
+export const runtime = "nodejs"; // safe default
+
 export function GET() {
-  return NextResponse.json({ ok: true, time: new Date().toISOString() });
+  const hasUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const hasService = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return NextResponse.json({
+    ok: true,
+    hasUrl,
+    hasService
+  });
 }
