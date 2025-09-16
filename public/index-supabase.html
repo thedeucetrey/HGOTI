@@ -1,5 +1,242 @@
-<script>
-  const SUPABASE_URL = "https://otwbhhnneklouzbogggr.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90d2JoaG5uZWtsb3V6Ym9nZ2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NjI4MzcsImV4cCI6MjA3MzUzODgzN30.B-dzxz0ntOCNgAlHcVcqAnxYQ2ktJbhw512zK6g96Nk";
-  const ADMIN_PASS = "123456abcdef";
-</script>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hottest Woman on the Internet — Elo Ranker</title>
+  <meta name="description" content="Head-to-head Elo ranking of adult, consenting women creators (streamers, influencers, content creators)." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { color-scheme: light dark }
+    .card{ box-shadow:0 10px 25px rgba(0,0,0,.08) }
+    .btn{ transition:transform .05s ease }
+    .btn:active{ transform: translateY(1px) scale(.99) }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-white to-zinc-50 text-zinc-900 antialiased">
+
+  <!-- Header -->
+  <header class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Hottest Woman on the Internet</h1>
+    <nav class="flex items-center gap-2 text-sm">
+      <button id="unlockBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100 flex items-center gap-1">
+        <span id="lockIcon">🔒</span><span id="lockLabel">Unlock Admin</span>
+      </button>
+      <button id="addBtn" class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800 hidden">Add Creator</button>
+      <button id="refreshBtn" class="btn rounded-xl px-3 py-2 border border-zinc-300 hover:bg-zinc-100">Refresh</button>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pb-20">
+    <!-- Arena -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6" id="arena">
+      <article class="card rounded-2xl overflow-hidden bg-white border border-zinc-200">
+        <div class="aspect-[4/5] bg-zinc-100 overflow-hidden"><img id="imgA" alt="" class="w-full h-full object-cover"></div>
+        <div class="p-4 flex items-center justify-between gap-2">
+          <div><a id="nameA" href="#" class="text-lg font-semibold hover:underline"></a><p id="tagA" class="text-xs text-zinc-500"></p></div>
+          <button id="voteA" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700">Vote</button>
+        </div>
+      </article>
+      <article class="card rounded-2xl overflow-hidden bg-white border border-zinc-200">
+        <div class="aspect-[4/5] bg-zinc-100 overflow-hidden"><img id="imgB" alt="" class="w-full h-full object-cover"></div>
+        <div class="p-4 flex items-center justify-between gap-2">
+          <div><a id="nameB" href="#" class="text-lg font-semibold hover:underline"></a><p id="tagB" class="text-xs text-zinc-500"></p></div>
+          <button id="voteB" class="btn rounded-xl px-5 py-2.5 bg-pink-600 text-white hover:bg-pink-700">Vote</button>
+        </div>
+      </article>
+    </section>
+
+    <div class="relative my-6">
+      <div class="h-px bg-gradient-to-r from-transparent via-zinc-300 to-transparent"></div>
+      <div class="absolute inset-0 flex items-center justify-center -mt-3">
+        <span class="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full border border-zinc-200 text-xs font-medium">Head-to-Head Elo</span>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <section>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-bold">Leaderboard</h2>
+        <div class="text-xs text-zinc-500">Women creators • Click a name to view</div>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+        <table class="w-full text-sm">
+          <thead class="bg-zinc-50 text-zinc-600">
+            <tr><th class="text-left p-3">#</th><th class="text-left p-3">Creator</th><th class="text-left p-3">Tags</th><th class="text-right p-3">Elo</th><th class="text-right p-3">W-L</th></tr>
+          </thead>
+          <tbody id="board"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="mt-10 text-xs text-zinc-500 leading-relaxed">
+      <p><strong>Policy:</strong> list only adult (18+), consenting women creators (streamers, influencers, content creators). Submissions must confirm age and consent.</p>
+    </footer>
+  </main>
+
+  <!-- Add Creator Modal -->
+  <div id="addModal" class="fixed inset-0 hidden z-50">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <form id="addForm" class="relative bg-white w-full sm:max-w-lg mx-auto mt-8 sm:mt-12 rounded-2xl overflow-hidden" autocomplete="off">
+      <div class="flex items-center justify-between p-4 border-b border-zinc-200">
+        <h3 class="text-lg font-bold">Add Woman Creator (18+)</h3>
+        <button type="button" id="closeAdd" class="btn px-2 py-1 rounded-lg border border-zinc-300">Close</button>
+      </div>
+      <div class="p-4 grid gap-3">
+        <input name="name" required placeholder="Display name" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="image" required placeholder="Portrait image URL (4:5 works best)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="tags" placeholder="Tags (comma-separated, e.g. streamer, influencer)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <textarea name="bio" placeholder="Short bio (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2"></textarea>
+        <input name="x" placeholder="X (Twitter) profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <input name="onlyfans" placeholder="OnlyFans profile URL (optional)" class="w-full rounded-xl border border-zinc-300 px-3 py-2" />
+        <label class="text-xs text-zinc-600 flex items-center gap-2">
+          <input type="checkbox" name="adult" required class="accent-pink-600">
+          I confirm she is an adult (18+) and has consented to be listed.
+        </label>
+        <button class="btn rounded-xl px-5 py-2.5 bg-zinc-900 text-white hover:bg-zinc-800">Add</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Admin Unlock Modal -->
+  <div id="unlockModal" class="fixed inset-0 hidden z-50">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <form id="unlockForm" class="relative bg-white w-full sm:max-w-xs mx-auto mt-24 rounded-2xl overflow-hidden">
+      <div class="p-4 border-b border-zinc-200"><h3 class="text-lg font-bold">Admin Password</h3></div>
+      <div class="p-4 grid gap-3">
+        <input type="password" name="pass" placeholder="Enter password" class="w-full rounded-xl border border-zinc-300 px-3 py-2" autofocus />
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" id="cancelUnlock" class="btn rounded-xl px-3 py-2 border border-zinc-300">Cancel</button>
+          <button class="btn rounded-xl px-4 py-2 bg-zinc-900 text-white hover:bg-zinc-800">Unlock</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // ===== Your project constants (already set to your values) =====
+    const SUPABASE_URL = "https://otwbhhnneklouzbogggr.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90d2JoaG5uZWtsb3V6Ym9nZ2dyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NjI4MzcsImV4cCI6MjA3MzUzODgzN30.B-dzxz0ntOCNgAlHcVcqAnxYQ2ktJbhw512zK6g96Nk";
+    const ADMIN_PASS = "123456abcdef"; // client-side UI lock only
+
+    // ===== Supabase client =====
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ===== Elo helpers =====
+    function expectedScore(rA, rB){ return 1 / (1 + Math.pow(10, (rB - rA) / 400)); }
+    function kFactor(elo){ if (elo < 1200) return 40; if (elo < 1600) return 32; if (elo < 2000) return 24; return 16; }
+    function applyEloPair(a, b, winnerIsA){
+      const EA = expectedScore(a.elo, b.elo), EB = expectedScore(b.elo, a.elo);
+      const KA = kFactor(a.elo), KB = kFactor(b.elo);
+      if (winnerIsA){ a.elo = Math.round(a.elo + KA * (1 - EA)); a.wins++; b.elo = Math.round(b.elo + KB * (0 - EB)); b.losses++; }
+      else { a.elo = Math.round(a.elo + KA * (0 - EA)); a.losses++; b.elo = Math.round(b.elo + KB * (1 - EB)); b.wins++; }
+    }
+
+    // ===== State =====
+    let creators = [];
+    let pair = [];
+    const els = {
+      imgA: document.getElementById("imgA"), imgB: document.getElementById("imgB"),
+      nameA: document.getElementById("nameA"), nameB: document.getElementById("nameB"),
+      tagA: document.getElementById("tagA"), tagB: document.getElementById("tagB"),
+      voteA: document.getElementById("voteA"), voteB: document.getElementById("voteB"),
+      board: document.getElementById("board"),
+      addBtn: document.getElementById("addBtn"), refreshBtn: document.getElementById("refreshBtn"),
+      unlockBtn: document.getElementById("unlockBtn"), lockIcon: document.getElementById("lockIcon"), lockLabel: document.getElementById("lockLabel"),
+      addModal: document.getElementById("addModal"), addForm: document.getElementById("addForm"), closeAdd: document.getElementById("closeAdd"),
+      unlockModal: document.getElementById("unlockModal"), unlockForm: document.getElementById("unlockForm"), cancelUnlock: document.getElementById("cancelUnlock"),
+    };
+
+    function isAdmin(){ return sessionStorage.getItem("hwoi_is_admin")==="1"; }
+    function updateAdminUI(){ const a=isAdmin(); els.addBtn.classList.toggle("hidden", !a); els.lockIcon.textContent=a?"🔓":"🔒"; els.lockLabel.textContent=a?"Admin Unlocked":"Unlock Admin"; }
+
+    // ===== DB =====
+    async function dbListCreators(){
+      const { data, error } = await sb.from("creators")
+        .select("id, display_name, image_url, tags, bio, x_url, onlyfans_url, elo, wins, losses, created_at")
+        .order("elo", { ascending: false });
+      if (error) throw error; return data||[];
+    }
+    async function dbUpdateCreator(id, patch){ const { error } = await sb.from("creators").update(patch).eq("id", id); if (error) throw error; }
+    async function dbInsertCreator(c){
+      const { error } = await sb.from("creators").insert({
+        display_name: c.name, image_url: c.image, tags: c.tags, bio: c.bio||null, x_url: c.x||null, onlyfans_url: c.onlyfans||null,
+        elo: 1200, wins: 0, losses: 0
+      }); if (error) throw error;
+    }
+
+    // ===== UI =====
+    function pickTwo(){
+      if (creators.length < 2) return [];
+      let i = Math.floor(Math.random()*creators.length); let j=i; while (j===i) j = Math.floor(Math.random()*creators.length);
+      return [creators[i], creators[j]];
+    }
+    function renderArena(){
+      pair = pickTwo();
+      if (pair.length<2){ els.imgA.src=els.imgB.src=""; els.nameA.textContent="Add more creators"; els.nameB.textContent=""; els.tagA.textContent=els.tagB.textContent=""; return; }
+      const [A,B]=pair; els.imgA.src=A.image_url; els.imgA.alt=A.display_name; els.imgB.src=B.image_url; els.imgB.alt=B.display_name;
+      els.nameA.textContent=A.display_name; els.nameB.textContent=B.display_name;
+      els.tagA.textContent=(A.tags||[]).slice(0,2).join(" · "); els.tagB.textContent=(B.tags||[]).slice(0,2).join(" · ");
+    }
+    function renderBoard(){
+      const sorted=[...creators].sort((a,b)=>b.elo-a.elo);
+      els.board.innerHTML = sorted.map((c,i)=>`
+        <tr class="${i%2?'bg-white':'bg-zinc-50/60'}">
+          <td class="p-3">${i+1}</td>
+          <td class="p-3 font-medium">${c.display_name}</td>
+          <td class="p-3 text-zinc-500">${(c.tags||[]).join(", ")}</td>
+          <td class="p-3 text-right font-semibold">${c.elo}</td>
+          <td class="p-3 text-right">${c.wins}-${c.losses}</td>
+        </tr>`).join("");
+    }
+    async function refreshAll(){ creators = await dbListCreators(); renderBoard(); renderArena(); }
+
+    // ===== Voting =====
+    els.voteA.addEventListener("click", async ()=>{
+      if (pair.length<2) return;
+      const [A,B]={0: {...pair[0]}, 1: {...pair[1]}};
+      applyEloPair(A,B,true);
+      await dbUpdateCreator(pair[0].id, { elo:A.elo, wins:A.wins });
+      await dbUpdateCreator(pair[1].id, { elo:B.elo, losses:B.losses });
+      await refreshAll();
+    });
+    els.voteB.addEventListener("click", async ()=>{
+      if (pair.length<2) return;
+      const [A,B]={0: {...pair[0]}, 1: {...pair[1]}};
+      applyEloPair(A,B,false);
+      await dbUpdateCreator(pair[0].id, { elo:A.elo, losses:A.losses });
+      await dbUpdateCreator(pair[1].id, { elo:B.elo, wins:B.wins });
+      await refreshAll();
+    });
+
+    // ===== Admin UI =====
+    els.unlockBtn.addEventListener("click", ()=>{ if(isAdmin()){ sessionStorage.removeItem("hwoi_is_admin"); updateAdminUI(); } else { els.unlockModal.classList.remove("hidden"); } });
+    els.cancelUnlock.addEventListener("click", ()=>{ els.unlockModal.classList.add("hidden"); els.unlockForm.reset(); });
+    els.unlockForm.addEventListener("submit",(e)=>{ e.preventDefault(); const pass=new FormData(els.unlockForm).get("pass"); if (pass===ADMIN_PASS){ sessionStorage.setItem("hwoi_is_admin","1"); updateAdminUI(); els.cancelUnlock.click(); } else alert("Incorrect password."); });
+    els.addBtn.addEventListener("click", ()=>{ if(!isAdmin()) return alert("Admin locked."); els.addModal.classList.remove("hidden"); });
+    els.closeAdd.addEventListener("click", ()=> els.addModal.classList.add("hidden"));
+    els.addForm.addEventListener("submit", async (e)=>{
+      e.preventDefault(); if(!isAdmin()) return alert("Admin locked.");
+      const fd=new FormData(els.addForm);
+      if (!fd.get("adult")) return alert("Adult & consent confirmation required.");
+      const c = {
+        name: String(fd.get("name")||"").trim(),
+        image: String(fd.get("image")||"").trim(),
+        tags: String(fd.get("tags")||"").split(",").map(s=>s.trim()).filter(Boolean),
+        bio: String(fd.get("bio")||"").trim(),
+        x: String(fd.get("x")||"").trim(),
+        onlyfans: String(fd.get("onlyfans")||"").trim()
+      };
+      if (!c.name || !c.image) return alert("Name and image required.");
+      await dbInsertCreator(c); els.addModal.classList.add("hidden"); els.addForm.reset(); await refreshAll(); alert("Creator added.");
+    });
+
+    els.refreshBtn.addEventListener("click", refreshAll);
+
+    // ===== First load =====
+    updateAdminUI();
+    refreshAll().catch(err=>{ console.error(err); alert("Failed to load data. Check Supabase table & RLS."); });
+  </script>
+</body>
+</html>
