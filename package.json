@@ -1,22 +1,14 @@
 {
-  "name": "hwoi",
+  "name": "hwoi-api-min",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.45.4",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1"
-  },
-  "devDependencies": {
-    "autoprefixer": "10.4.17",
-    "postcss": "8.4.35",
-    "tailwindcss": "3.4.4",
-    "typescript": "5.4.5"
   }
 }
