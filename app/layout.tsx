@@ -1,13 +1,9 @@
 export const metadata = {
   title: "HGOTI",
-  description: "Hottest Woman on the Internet — API & admin endpoints",
+  description: "Hottest Woman on the Internet — API & endpoints",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>
